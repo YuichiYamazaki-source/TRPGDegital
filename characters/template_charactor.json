@@ -1,0 +1,165 @@
+{
+  "meta": {
+    "name": "高槻 恒一",
+    "player": "サンプルPL",
+    "occupation": "フリーランス記者",
+    "age": 32,
+    "sex": "男性",
+    "residence": "東京都",
+    "birthplace": "大阪府"
+  },
+
+  "attributes": {
+    "STR": 50,
+    "CON": 60,
+    "SIZ": 55,
+    "DEX": 65,
+    "APP": 60,
+    "INT": 75,
+    "POW": 70,
+    "EDU": 80
+  },
+
+  "derived": {
+    "idea": 75,
+    "knowledge": 80,
+    "luck": 70,
+    "sanity": {
+      "current": 70,
+      "max": 99
+    },
+    "hp": {
+      "current": 11,
+      "max": 11
+    },
+    "mp": {
+      "current": 14,
+      "max": 14
+    },
+    "damageBonus": "0",
+    "build": 0,
+    "moveRate": 8
+  },
+
+  "combat": {
+    "dodge": 32,
+    "weapons": [
+      {
+        "name": "素手（パンチ）",
+        "skill": 50,
+        "damage": "1D3",
+        "range": "近接",
+        "attacksPerRound": 1,
+        "ammo": 0,
+        "malfunction": 0
+      },
+      {
+        "name": "小型ナイフ",
+        "skill": 55,
+        "damage": "1D4",
+        "range": "近接",
+        "attacksPerRound": 1,
+        "ammo": 0,
+        "malfunction": 0
+      }
+    ]
+  },
+
+  "skills": {
+    "威圧": 20,
+    "言いくるめ": 65,
+    "医学": 5,
+    "運転（自動車）": 50,
+    "応急手当": 50,
+    "オカルト": 40,
+    "隠密": 45,
+    "回避": 32,
+    "鍵開け": 10,
+    "鑑定": 25,
+    "機械修理": 20,
+    "聞き耳": 60,
+    "経理": 20,
+    "クトゥルフ神話": 5,
+    "芸術／製作": {
+      "name": "文章執筆",
+      "value": 70
+    },
+    "近接戦闘（格闘）": 50,
+    "信用": 40,
+    "心理学": 60,
+    "人類学": 20,
+    "水泳": 25,
+    "精神分析": 10,
+    "説得": 60,
+    "操縦": {
+      "name": "ドローン",
+      "value": 30
+    },
+    "地質学": 1,
+    "跳躍": 25,
+    "追跡": 40,
+    "電気修理": 15,
+    "投擲": 35,
+    "登攀": 30,
+    "図書館": 75,
+    "ナビゲート": 30,
+    "変装": 25,
+    "法律": 30,
+    "母国語": 80,
+    "他の言語": [
+      {
+        "name": "英語",
+        "value": 60
+      }
+    ],
+    "目星": 70,
+    "歴史": 50,
+    "自由技能": [
+      {
+        "name": "インターネット調査",
+        "value": 70
+      }
+    ]
+  },
+
+  "background": {
+    "appearance": "細身で無精ひげ、常にノートPCを持ち歩く",
+    "traits": "粘り強く、真実を追い求める",
+    "ideology": "報道は真実を伝えるべき",
+    "injuries": "特になし",
+    "importantPeople": "大学時代の恩師（ジャーナリズム教授）",
+    "phobias": "閉所恐怖症（軽度）",
+    "significantLocations": "よく通う都内の古書店",
+    "tomesAndSpells": "なし",
+    "possessions": "取材ノート、ICレコーダー",
+    "encounters": "奇妙なカルト集団を遠目に目撃",
+    "backstory": "新聞社を辞め、フリーとして活動。都市伝説や未解決事件を追う中で、常識では説明できない事象に興味を持ち始めた。"
+  },
+
+  "status": {
+    "temporaryInsanity": false,
+    "indefiniteInsanity": false,
+    "majorWound": false
+  },
+
+  "finance": {
+    "cash": 150000,
+    "assets": 2000000,
+    "spendingLevel": "中流"
+  },
+
+  "inventory": [
+    "ノートPC",
+    "スマートフォン",
+    "ICレコーダー",
+    "筆記用具",
+    "小型ナイフ"
+  ],
+
+  "companions": [
+    {
+      "name": "佐藤 美咲",
+      "player": "別PL"
+    }
+  ]
+}

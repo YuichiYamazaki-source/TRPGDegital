@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import re
+import random
+import uuid
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -15,9 +17,19 @@ app = FastAPI(title="CoC AI GM API")
 session_manager = SessionManager()
 gm_engine = GMEngine()
 
-CHARACTERS_DIR = Path("characters")
-SCENARIOS_DIR = Path("scenarios")
+# ===== ディレクトリ =====
 
+DATA_DIR = Path("data")
+CHARACTERS_DIR = DATA_DIR / "characters"
+SCENARIOS_DIR = DATA_DIR / "scenarios"
+CHAR_BUILD_DIR = DATA_DIR / "character_builds"
+
+CHARACTERS_DIR.mkdir(parents=True, exist_ok=True)
+SCENARIOS_DIR.mkdir(parents=True, exist_ok=True)
+CHAR_BUILD_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# ===== 既存ロード =====
 
 def load_characters() -> dict[str, dict]:
     characters: dict[str, dict] = {}
@@ -39,9 +51,69 @@ def load_scenario_list() -> list[dict[str, str]]:
 
 CHARACTERS = load_characters()
 
+# ===== キャラビルド用 =====
 
-# --- Request / Response models ---
+def get_build_path(user_id: str) -> Path:
+    return CHAR_BUILD_DIR / f"{user_id}.json"
 
+
+def save_build(user_id: str, data: dict):
+    get_build_path(user_id).write_text(
+        json.dumps(data, ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
+
+
+def load_build(user_id: str) -> dict:
+    path = get_build_path(user_id)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Build not found")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def create_empty_character():
+    return {
+        "step": 1,
+        "remaining": 0,
+        "character": {
+            "id": "",
+            "meta": {},
+            "attributes": {},
+            "derived": {},
+            "skills": {},
+            "inventory": []
+        }
+    }
+
+
+# ===== ダイス =====
+
+def roll_3d6x5():
+    return sum(random.randint(1, 6) for _ in range(3)) * 5
+
+
+def roll_attributes():
+    return {
+        "STR": roll_3d6x5(),
+        "CON": roll_3d6x5(),
+        "SIZ": roll_3d6x5(),
+        "DEX": roll_3d6x5(),
+        "APP": roll_3d6x5(),
+        "INT": roll_3d6x5(),
+        "POW": roll_3d6x5(),
+        "EDU": roll_3d6x5()
+    }
+
+
+# ===== 職業 =====
+
+OCCUPATIONS = {
+    "記者": {"skills": {"言いくるめ": 20, "図書館": 20, "心理学": 20, "目星": 20}},
+    "警察官": {"skills": {"威圧": 20, "射撃（拳銃）": 20, "法律": 20, "追跡": 20}}
+}
+
+
+# ===== Request / Response =====
 
 class SessionCreateRequest(BaseModel):
     channel_id: str
@@ -73,40 +145,36 @@ class MessageResponse(BaseModel):
     message: str
 
 
-# --- Endpoints ---
-
+# ===== 既存API =====
 
 @app.get("/scenarios", response_model=list[ScenarioItem])
-def get_scenarios() -> list[dict[str, str]]:
-    """Return the list of available scenarios."""
+def get_scenarios():
     return load_scenario_list()
 
 
 @app.get("/characters")
-def get_characters() -> list[dict]:
-    """Return the list of selectable characters."""
+def get_characters():
     return list(CHARACTERS.values())
 
 
 @app.post("/session", status_code=201, response_model=SessionCreateResponse)
-def create_session(req: SessionCreateRequest) -> dict:
-    """Start a new session with a scenario and selected characters."""
+def create_session(req: SessionCreateRequest):
     scenario_path = SCENARIOS_DIR / f"{req.scenario_id}.md"
     if not scenario_path.exists():
-        raise HTTPException(status_code=400, detail=f"Scenario '{req.scenario_id}' not found")
+        raise HTTPException(status_code=400, detail="Scenario not found")
 
     for cid in req.character_ids:
         if cid not in CHARACTERS:
-            raise HTTPException(status_code=400, detail=f"Character '{cid}' not found")
+            raise HTTPException(status_code=400, detail="Character not found")
 
     selected = {cid: CHARACTERS[cid] for cid in req.character_ids}
     session_id = session_manager.create_session(req.channel_id, req.scenario_id, selected)
+
     return {"session_id": session_id, "characters": list(selected.values())}
 
 
 @app.post("/session/{session_id}/chat", response_model=ChatResponse)
-async def chat(session_id: str, req: ChatRequest) -> dict:
-    """Send a player message and receive the KP reply."""
+async def chat(session_id: str, req: ChatRequest):
     session = session_manager.get_session(session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -116,14 +184,109 @@ async def chat(session_id: str, req: ChatRequest) -> dict:
 
     character = session.characters[req.character_id]
     reply = await gm_engine.respond(session, character, req.message)
+
     session_manager.add_message(session_id, character["name"], req.message, reply)
 
     return {"reply": reply, "session_id": session_id}
 
 
 @app.delete("/session/{session_id}", response_model=MessageResponse)
-def end_session(session_id: str) -> dict:
-    """End a session and clear its history."""
+def end_session(session_id: str):
     if not session_manager.delete_session(session_id):
         raise HTTPException(status_code=404, detail="Session not found")
     return {"message": "Session ended"}
+
+
+# ===== キャラ作成API =====
+
+@app.post("/character/start")
+def start_character(user_id: str):
+    data = create_empty_character()
+    save_build(user_id, data)
+    return data
+
+
+@app.post("/character/roll")
+def roll_character(user_id: str):
+    data = load_build(user_id)
+
+    attrs = roll_attributes()
+    data["character"]["attributes"] = attrs
+
+    data["character"]["derived"] = {
+        "hp": (attrs["CON"] + attrs["SIZ"]) // 10,
+        "mp": attrs["POW"] // 5,
+        "san": attrs["POW"]
+    }
+
+    data["step"] = 2
+    save_build(user_id, data)
+    return data
+
+
+@app.post("/character/job")
+def select_job(user_id: str, job_name: str):
+    data = load_build(user_id)
+
+    if job_name not in OCCUPATIONS:
+        raise HTTPException(status_code=400, detail="Invalid job")
+
+    for k, v in OCCUPATIONS[job_name]["skills"].items():
+        data["character"]["skills"][k] = v
+
+    edu = data["character"]["attributes"]["EDU"]
+    data["remaining"] = edu * 4
+
+    data["character"]["meta"]["occupation"] = job_name
+    data["step"] = 3
+
+    save_build(user_id, data)
+    return data
+
+
+@app.post("/character/skill")
+def add_skill(user_id: str, skill_name: str, value: int):
+    data = load_build(user_id)
+
+    if value > data["remaining"]:
+        return {
+            "error": "ポイント不足",
+            "remaining": data["remaining"]
+        }
+
+    skills = data["character"]["skills"]
+    skills[skill_name] = skills.get(skill_name, 0) + value
+
+    data["remaining"] -= value
+
+    save_build(user_id, data)
+    return data
+
+
+@app.post("/character/buy")
+def buy_item(user_id: str, item: str):
+    data = load_build(user_id)
+
+    data["character"]["inventory"].append(item)
+
+    save_build(user_id, data)
+    return data
+
+
+@app.post("/character/meta")
+def finalize_character(user_id: str, name: str):
+    data = load_build(user_id)
+    char = data["character"]
+
+    char_id = str(uuid.uuid4())
+    char["id"] = char_id
+    char["name"] = name
+
+    out_path = CHARACTERS_DIR / f"{char_id}.json"
+    out_path.write_text(json.dumps(char, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    get_build_path(user_id).unlink(missing_ok=True)
+
+    CHARACTERS[char_id] = char
+
+    return char

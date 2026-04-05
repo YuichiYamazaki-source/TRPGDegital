@@ -326,3 +326,143 @@ if __name__ == "__main__":
     if not DISCORD_TOKEN:
         raise RuntimeError("DISCORD_TOKEN is not set in environment")
     bot.run(DISCORD_TOKEN)
+
+# ===== Character Creation Commands =====
+
+@bot.command(name="cstart")
+async def char_start(ctx: commands.Context):
+    user_id = str(ctx.author.id)
+
+    try:
+        result = await api.post("/character/start", {"user_id": user_id})
+        await ctx.send("キャラクター作成を開始しました！ `!croll` で能力値を決定してください。")
+    except aiohttp.ClientError:
+        await ctx.send("APIエラー：キャラ作成開始に失敗しました")
+
+
+@bot.command(name="croll")
+async def char_roll(ctx: commands.Context):
+    user_id = str(ctx.author.id)
+
+    try:
+        result = await api.post("/character/roll", {"user_id": user_id})
+        attrs = result["character"]["attributes"]
+
+        lines = ["能力値を決定しました:"]
+        lines.extend(f"{k}: {v}" for k, v in attrs.items())
+        lines.append("\n職業を選択してください: `!cjob 記者`")
+
+        await ctx.send("\n".join(lines))
+    except aiohttp.ClientError:
+        await ctx.send("APIエラー：ロールに失敗しました")
+
+
+@bot.command(name="cjob")
+async def char_job(ctx: commands.Context, job_name: str):
+    user_id = str(ctx.author.id)
+
+    try:
+        result = await api.post("/character/job", {
+            "user_id": user_id,
+            "job_name": job_name
+        })
+
+        remaining = result["remaining"]
+
+        await ctx.send(
+            f"職業 **{job_name}** を選択しました！\n"
+            f"技能ポイント: {remaining}\n"
+            f"`!cskill スキル名 値` で割り振ってください"
+        )
+    except aiohttp.ClientError:
+        await ctx.send("APIエラー：職業選択に失敗しました")
+
+
+@bot.command(name="cskill")
+async def char_skill(ctx: commands.Context, skill_name: str, value: int):
+    user_id = str(ctx.author.id)
+
+    try:
+        result = await api.post("/character/skill", {
+            "user_id": user_id,
+            "skill_name": skill_name,
+            "value": value
+        })
+
+        if "error" in result:
+            await ctx.send(
+                f" {result['error']}（残り: {result['remaining']}）"
+            )
+            return
+
+        remaining = result["remaining"]
+
+        await ctx.send(
+            f"{skill_name} +{value}（残り: {remaining}）"
+        )
+    except aiohttp.ClientError:
+        await ctx.send("APIエラー：技能割り振り失敗")
+
+
+@bot.command(name="cbuy")
+async def char_buy(ctx: commands.Context, item: str):
+    user_id = str(ctx.author.id)
+
+    try:
+        await api.post("/character/buy", {
+            "user_id": user_id,
+            "item": item
+        })
+
+        await ctx.send(f" **{item}** を購入しました")
+    except aiohttp.ClientError:
+        await ctx.send("APIエラー：購入失敗")
+
+
+@bot.command(name="cmeta")
+async def char_meta(ctx: commands.Context, name: str):
+    user_id = str(ctx.author.id)
+
+    try:
+        result = await api.post("/character/meta", {
+            "user_id": user_id,
+            "name": name
+        })
+
+        await ctx.send(
+            f"🎉 キャラクター完成！\n"
+            f"名前: {result['name']}\n"
+            f"ID: `{result['id']}`\n\n"
+            f"`!characters` で確認できます"
+        )
+    except aiohttp.ClientError:
+        await ctx.send("APIエラー：キャラ完成失敗")
+
+
+@bot.command(name="cstatus")
+async def char_status(ctx: commands.Context):
+    user_id = str(ctx.author.id)
+
+    try:
+        result = await api.get(f"/character/status?user_id={user_id}")
+        char = result["character"]
+
+        attrs = char.get("attributes", {})
+        skills = char.get("skills", {})
+
+        lines = ["現在のキャラクター状態"]
+
+        if attrs:
+            lines.append("\n【能力値】")
+            lines.extend(f"{k}: {v}" for k, v in attrs.items())
+
+        if skills:
+            lines.append("\n【技能】")
+            lines.extend(f"{k}: {v}" for k, v in skills.items())
+
+        lines.append(f"\n残りポイント: {result.get('remaining', 0)}")
+
+        await ctx.send("\n".join(lines))
+
+    except aiohttp.ClientError:
+        await ctx.send("APIエラー：状態取得失敗")

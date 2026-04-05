@@ -1,0 +1,68 @@
+{
+  "step": 3,
+  "remaining": 50,
+  "character": {
+    "meta": {
+      "occupation": "記者",
+      "name": "テス男",
+      "age": 20,
+      "sex": "男"
+    },
+    "attributes": {
+      "STR": 30,
+      "CON": 65,
+      "SIZ": 60,
+      "DEX": 65,
+      "APP": 60,
+      "INT": 20,
+      "POW": 45,
+      "EDU": 40
+    },
+    "derived": {
+      "idea": 20,
+      "knowledge": 40,
+      "luck": 45,
+      "sanity": {
+        "current": 45,
+        "max": 99
+      },
+      "hp": {
+        "current": 12,
+        "max": 12
+      },
+      "mp": {
+        "current": 9,
+        "max": 9
+      },
+      "damageBonus": "0",
+      "build": 0,
+      "moveRate": 8
+    },
+    "combat": {
+      "dodge": 0,
+      "weapons": []
+    },
+    "skills": {
+      "言いくるめ": 20,
+      "図書館": 20,
+      "心理学": 20,
+      "目星": 50,
+      "聞き耳": 80
+    },
+    "background": {},
+    "status": {
+      "temporaryInsanity": false,
+      "indefiniteInsanity": false,
+      "majorWound": false
+    },
+    "finance": {
+      "cash": 0,
+      "assets": 0,
+      "spendingLevel": ""
+    },
+    "inventory": [
+      "ナイフ"
+    ],
+    "companions": []
+  }
+}
