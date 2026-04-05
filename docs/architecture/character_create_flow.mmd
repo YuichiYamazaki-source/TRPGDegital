@@ -1,0 +1,19 @@
+---
+title: Character Create Flow
+---
+flowchart TD
+    A["!cstart : Start character creation"]
+    B["!croll : Roll attributes (3d6x5 for each stat)"]
+    C["!cjob &lt;job_name&gt; : Select a job and gain initial skills"]
+    D["!cskill &lt;skill_name&gt; &lt;value&gt; : Allocate skill points"]
+    E["!cbuy &lt;item_name&gt; : Purchase an item and add it to inventory"]
+    F["!cmeta &lt;name&gt; : Finalize and save the character"]
+    G["!cstatus : Show current character creation status"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> END((" "))
