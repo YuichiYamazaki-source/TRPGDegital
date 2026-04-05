@@ -62,6 +62,12 @@ def _extend_unique(target: list[str], values: Any) -> None:
             target.append(item)
 
 
+def _string_list(values: Any) -> list[str] | None:
+    if not isinstance(values, list):
+        return None
+    return [str(value) for value in values]
+
+
 def _coerce_bool(value: Any) -> bool | None:
     if isinstance(value, bool):
         return value
@@ -167,12 +173,32 @@ def _apply_state_update(session: Session, update: dict[str, Any] | None) -> None
     environment = session.environment
 
     scene = update.get("scene")
+    scene_changed = False
     if isinstance(scene, str) and scene.strip():
+        scene_changed = environment.scene != scene.strip()
         environment.scene = scene.strip()
 
     scene_summary = update.get("scene_summary")
     if isinstance(scene_summary, str) and scene_summary.strip():
         environment.scene_summary = scene_summary.strip()
+
+    scene_highlights = _string_list(update.get("scene_highlights"))
+    if scene_highlights is not None:
+        environment.scene_highlights = scene_highlights
+    elif scene_changed:
+        environment.scene_highlights = []
+
+    scene_goal = update.get("scene_goal")
+    if isinstance(scene_goal, str):
+        environment.scene_goal = scene_goal.strip()
+    elif scene_changed:
+        environment.scene_goal = ""
+
+    unresolved_threads = _string_list(update.get("unresolved_threads"))
+    if unresolved_threads is not None:
+        environment.unresolved_threads = unresolved_threads
+    elif scene_changed:
+        environment.unresolved_threads = []
 
     _extend_unique(environment.clues, update.get("clues_added"))
     _extend_unique(environment.shared_inventory, update.get("shared_inventory_added"))
@@ -366,6 +392,11 @@ class CheckResolveRequest(BaseModel):
     roll: int | None = None
 
 
+class CheckRespondRequest(BaseModel):
+    character_id: str
+    decision: str
+
+
 class SessionCreateResponse(BaseModel):
     session_id: str
     characters: list[dict]
@@ -374,6 +405,7 @@ class SessionCreateResponse(BaseModel):
 class ChatResponse(BaseModel):
     reply: str
     session_id: str
+    proposed_check: dict[str, Any] | None = None
     pending_check: dict[str, Any] | None = None
 
 
@@ -381,6 +413,14 @@ class CheckResolveResponse(BaseModel):
     reply: str
     session_id: str
     check_result: dict[str, Any]
+    proposed_check: dict[str, Any] | None = None
+    pending_check: dict[str, Any] | None = None
+
+
+class CheckRespondResponse(BaseModel):
+    message: str
+    session_id: str
+    proposed_check: dict[str, Any] | None = None
     pending_check: dict[str, Any] | None = None
 
 
@@ -442,9 +482,21 @@ async def chat(session_id: str, req: ChatRequest) -> dict[str, Any]:
     async with session.chat_lock:
         if session.pending_check is not None:
             raise HTTPException(status_code=409, detail="Resolve the pending check before continuing the scene")
+        if session.proposed_check is not None:
+            raise HTTPException(status_code=409, detail="Respond to the proposed check before continuing the scene")
 
         turn = await gm_engine.respond(session, character, req.message)
         _apply_state_update(session, turn.state_update)
+
+        proposed_check = None
+        if turn.proposed_check is not None:
+            try:
+                proposed_check = _build_pending_check(session, turn.proposed_check, req.character_id)
+            except ValueError:
+                log.exception("Failed to build proposed check from GM response")
+            session.proposed_check = proposed_check
+        else:
+            session.proposed_check = None
 
         pending_check = None
         if turn.pending_check is not None:
@@ -453,14 +505,56 @@ async def chat(session_id: str, req: ChatRequest) -> dict[str, Any]:
             except ValueError:
                 log.exception("Failed to build pending check from GM response")
             session.pending_check = pending_check
+        else:
+            session.pending_check = None
 
         session_manager.add_message(session_id, character["name"], req.message, turn.reply)
 
     return {
         "reply": turn.reply,
         "session_id": session_id,
+        "proposed_check": session.proposed_check.to_dict() if session.proposed_check else None,
         "pending_check": session.pending_check.to_dict() if session.pending_check else None,
     }
+
+
+@app.post("/session/{session_id}/check/respond", response_model=CheckRespondResponse)
+async def respond_to_check(session_id: str, req: CheckRespondRequest) -> dict[str, Any]:
+    session = session_manager.get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    async with session.chat_lock:
+        proposed = session.proposed_check
+        if proposed is None:
+            raise HTTPException(status_code=409, detail="There is no proposed check to respond to")
+
+        if req.character_id != proposed.character_id:
+            raise HTTPException(status_code=403, detail="This proposed check belongs to another player")
+
+        decision = req.decision.strip().lower()
+        if decision in {"accept", "yes", "ok", "confirm"}:
+            session_manager.add_history_entry(session_id, "user", f"[{proposed.character_name}]: 判定します")
+            session.pending_check = proposed
+            session.proposed_check = None
+            return {
+                "message": "判定を開始します。",
+                "session_id": session_id,
+                "proposed_check": None,
+                "pending_check": session.pending_check.to_dict(),
+            }
+
+        if decision in {"decline", "no", "cancel", "skip"}:
+            session_manager.add_history_entry(session_id, "user", f"[{proposed.character_name}]: 判定は見送ります")
+            session.proposed_check = None
+            return {
+                "message": "判定は見送りました。別の行動を選べます。",
+                "session_id": session_id,
+                "proposed_check": None,
+                "pending_check": None,
+            }
+
+        raise HTTPException(status_code=400, detail="Decision must be accept or decline")
 
 
 @app.post("/session/{session_id}/check/resolve", response_model=CheckResolveResponse)
@@ -488,6 +582,16 @@ async def resolve_check(session_id: str, req: CheckResolveRequest) -> dict[str, 
         turn = await gm_engine.respond(session, character, result["resolution_message"])
         _apply_state_update(session, turn.state_update)
 
+        next_proposed_check = None
+        if turn.proposed_check is not None:
+            try:
+                next_proposed_check = _build_pending_check(session, turn.proposed_check, req.character_id)
+            except ValueError:
+                log.exception("Failed to build follow-up proposed check from GM response")
+            session.proposed_check = next_proposed_check
+        else:
+            session.proposed_check = None
+
         next_pending_check = None
         if turn.pending_check is not None:
             try:
@@ -495,6 +599,8 @@ async def resolve_check(session_id: str, req: CheckResolveRequest) -> dict[str, 
             except ValueError:
                 log.exception("Failed to build follow-up pending check from GM response")
             session.pending_check = next_pending_check
+        else:
+            session.pending_check = None
 
         session_manager.add_message(session_id, character["name"], result["resolution_message"], turn.reply)
 
@@ -502,6 +608,7 @@ async def resolve_check(session_id: str, req: CheckResolveRequest) -> dict[str, 
         "reply": turn.reply,
         "session_id": session_id,
         "check_result": result,
+        "proposed_check": session.proposed_check.to_dict() if session.proposed_check else None,
         "pending_check": session.pending_check.to_dict() if session.pending_check else None,
     }
 

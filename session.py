@@ -78,6 +78,9 @@ class PlayerState:
 class EnvironmentState:
     scene: str = "導入"
     scene_summary: str = ""
+    scene_highlights: list[str] = field(default_factory=list)
+    scene_goal: str = ""
+    unresolved_threads: list[str] = field(default_factory=list)
     clues: list[str] = field(default_factory=list)
     shared_inventory: list[str] = field(default_factory=list)
     flags: dict[str, bool] = field(default_factory=dict)
@@ -87,6 +90,9 @@ class EnvironmentState:
         return {
             "scene": self.scene,
             "scene_summary": self.scene_summary,
+            "scene_highlights": list(self.scene_highlights),
+            "scene_goal": self.scene_goal,
+            "unresolved_threads": list(self.unresolved_threads),
             "clues": list(self.clues),
             "shared_inventory": list(self.shared_inventory),
             "flags": dict(self.flags),
@@ -150,6 +156,7 @@ class Session:
     history: list[dict[str, str]] = field(default_factory=list)
     environment: EnvironmentState = field(default_factory=EnvironmentState)
     npcs: dict[str, NPCState] = field(default_factory=dict)
+    proposed_check: PendingCheck | None = None
     pending_check: PendingCheck | None = None
     chat_lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False)
 
@@ -161,6 +168,7 @@ class Session:
             "players": [player.to_dict() for player in self.players.values()],
             "environment": self.environment.to_dict(),
             "npcs": [npc.to_dict() for npc in self.npcs.values()],
+            "proposed_check": self.proposed_check.to_dict() if self.proposed_check else None,
             "pending_check": self.pending_check.to_dict() if self.pending_check else None,
             "history_size": len(self.history),
         }

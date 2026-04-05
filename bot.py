@@ -104,11 +104,43 @@ def _format_pending_check(pending_check: dict[str, Any]) -> str:
     )
 
 
+def _format_proposed_check(proposed_check: dict[str, Any]) -> str:
+    if proposed_check["kind"] == "skill":
+        return (
+            f"判定候補: **{proposed_check['character_name']}** の "
+            f"【{proposed_check['skill_name']}】 {proposed_check['difficulty']} 判定 "
+            f"(成功値: {proposed_check['target_value']})"
+        )
+
+    return (
+        f"判定候補: **{proposed_check['character_name']}** の SANチェック "
+        f"(成功値: {proposed_check['target_value']})"
+    )
+
+
 def _format_pending_check_help(pending_check: dict[str, Any]) -> str:
     return (
         f"{_format_pending_check(pending_check)}\n"
         "`!check` でそのまま振るか、手元で振った結果を使うなら `!check 43` のように入力してください。"
     )
+
+
+def _format_proposed_check_help(proposed_check: dict[str, Any]) -> str:
+    return (
+        f"{_format_proposed_check(proposed_check)}\n"
+        "判定を承諾するなら `!check ok`、見送るなら `!check no` を入力してください。"
+    )
+
+
+def _parse_check_roll_arg(arg: str | None) -> int | None:
+    if arg is None:
+        return None
+
+    stripped = arg.strip()
+    if not stripped:
+        return None
+
+    return int(stripped)
 
 
 async def _get_session_state(channel_id: int) -> tuple[dict[str, Any], dict[str, Any]] | tuple[None, None]:
@@ -162,6 +194,18 @@ async def on_message(message: discord.Message) -> None:
 
     try:
         state = await api.get(f"/session/{session_info['session_id']}/state")
+        proposed_check = state.get("proposed_check")
+        if proposed_check is not None:
+            if proposed_check["character_id"] == player_entry["character_id"]:
+                await message.channel.send(
+                    f"{_format_proposed_check(proposed_check)}\n先に `!check ok` で承諾するか `!check no` で見送ってください。"
+                )
+            else:
+                await message.channel.send(
+                    f"{_format_proposed_check(proposed_check)}\nこの判定の可否が決まるまで次の行動は少し待ってください。"
+                )
+            return
+
         pending_check = state.get("pending_check")
         if pending_check is not None:
             if pending_check["character_id"] == player_entry["character_id"]:
@@ -185,6 +229,8 @@ async def on_message(message: discord.Message) -> None:
                 {"character_id": player_entry["character_id"], "message": player_message},
             )
         await message.channel.send(result["reply"])
+        if result.get("proposed_check") is not None:
+            await message.channel.send(_format_proposed_check_help(result["proposed_check"]))
         if result.get("pending_check") is not None:
             await message.channel.send(_format_pending_check_help(result["pending_check"]))
     except aiohttp.ClientResponseError as exc:
@@ -349,7 +395,9 @@ async def begin_session(ctx: commands.Context) -> None:
     session_info["session_id"] = result["session_id"]
     session_info["status"] = "active"
 
-    await ctx.send("セッションを開始します。発言は `>> メッセージ`、判定解決は `!check` で行ってください。\n\n*KPが導入を始めます...*")
+    await ctx.send(
+        "セッションを開始します。発言は `>> メッセージ`、判定の承諾や解決は `!check` で行ってください。\n\n*KPが導入を始めます...*"
+    )
 
     first_player = next(iter(session_info["players"].values()))
     try:
@@ -359,6 +407,8 @@ async def begin_session(ctx: commands.Context) -> None:
                 {"character_id": first_player["character_id"], "message": "（セッション開始）"},
             )
         await ctx.send(opening["reply"])
+        if opening.get("proposed_check") is not None:
+            await ctx.send(_format_proposed_check_help(opening["proposed_check"]))
         if opening.get("pending_check") is not None:
             await ctx.send(_format_pending_check_help(opening["pending_check"]))
     except aiohttp.ClientError:
@@ -367,7 +417,7 @@ async def begin_session(ctx: commands.Context) -> None:
 
 
 @bot.command(name="check")
-async def resolve_pending_check(ctx: commands.Context, roll: int | None = None) -> None:
+async def resolve_pending_check(ctx: commands.Context, arg: str | None = None) -> None:
     session_info, state = await _get_session_state(ctx.channel.id)
     if session_info is None or state is None:
         await ctx.send("アクティブなセッションがありません。")
@@ -376,6 +426,54 @@ async def resolve_pending_check(ctx: commands.Context, roll: int | None = None) 
     player_state = _find_player_state(state, ctx.author.id)
     if player_state is None:
         await ctx.send("このセッションに参加していません。")
+        return
+
+    proposed_check = state.get("proposed_check")
+    if proposed_check is not None:
+        if proposed_check["character_id"] != player_state["character_id"]:
+            await ctx.send(f"{_format_proposed_check(proposed_check)}\nこの判定は別のプレイヤーの担当です。")
+            return
+
+        if arg is None:
+            await ctx.send(_format_proposed_check_help(proposed_check))
+            return
+
+        decision = arg.strip().lower()
+        if decision not in {"ok", "yes", "accept", "confirm", "no", "decline", "cancel", "skip"}:
+            await ctx.send("判定候補があります。承諾するなら `!check ok`、見送るなら `!check no` を使ってください。")
+            return
+
+        try:
+            result = await api.post(
+                f"/session/{session_info['session_id']}/check/respond",
+                {
+                    "character_id": player_state["character_id"],
+                    "decision": decision,
+                },
+            )
+        except aiohttp.ClientResponseError as exc:
+            if exc.status == 403:
+                await ctx.send("この判定候補はあなたの担当ではありません。")
+            elif exc.status == 409:
+                await ctx.send("いま応答すべき判定候補はありません。")
+            else:
+                log.exception("Failed to respond to proposed check")
+                await ctx.send("判定候補への応答に失敗しました。")
+            return
+        except aiohttp.ClientError:
+            log.exception("Failed to respond to proposed check")
+            await ctx.send("判定候補への応答に失敗しました。")
+            return
+
+        await ctx.send(result["message"])
+        if result.get("pending_check") is not None:
+            await ctx.send(_format_pending_check_help(result["pending_check"]))
+        return
+
+    try:
+        roll = _parse_check_roll_arg(arg)
+    except ValueError:
+        await ctx.send("`!check`、`!check 43`、`!check ok`、`!check no` のいずれかの形式で入力してください。")
         return
 
     try:
@@ -419,6 +517,10 @@ async def resolve_pending_check(ctx: commands.Context, roll: int | None = None) 
 
     await ctx.send(summary)
     await ctx.send(result["reply"])
+    if result.get("proposed_check") is not None:
+        await ctx.send(_format_proposed_check_help(result["proposed_check"]))
+    if result.get("pending_check") is not None:
+        await ctx.send(_format_pending_check_help(result["pending_check"]))
 
 
 @bot.command(name="status")
@@ -445,6 +547,10 @@ async def show_status(ctx: commands.Context) -> None:
     if player_state["inventory"]:
         lines.append(f"所持品: {'、'.join(player_state['inventory'])}")
 
+    proposed_check = state.get("proposed_check")
+    if proposed_check and proposed_check["character_id"] == player_state["character_id"]:
+        lines.append(_format_proposed_check(proposed_check))
+
     pending_check = state.get("pending_check")
     if pending_check and pending_check["character_id"] == player_state["character_id"]:
         lines.append(_format_pending_check(pending_check))
@@ -469,6 +575,11 @@ async def show_party(ctx: commands.Context) -> None:
             line += f" | 状態: {'、'.join(player['status_effects'])}"
         lines.append(line)
 
+    proposed_check = state.get("proposed_check")
+    if proposed_check:
+        lines.append("")
+        lines.append(_format_proposed_check(proposed_check))
+
     pending_check = state.get("pending_check")
     if pending_check:
         lines.append("")
@@ -489,6 +600,12 @@ async def show_scene(ctx: commands.Context) -> None:
 
     if environment["scene_summary"]:
         lines.append(environment["scene_summary"])
+    if environment.get("scene_goal"):
+        lines.append(f"当面の目標: {environment['scene_goal']}")
+    if environment["scene_highlights"]:
+        lines.append(f"見えているもの: {'、'.join(environment['scene_highlights'])}")
+    if environment.get("unresolved_threads"):
+        lines.append(f"気がかり: {'、'.join(environment['unresolved_threads'])}")
     if environment["clues"]:
         lines.append(f"手がかり: {'、'.join(environment['clues'])}")
 
@@ -507,6 +624,10 @@ async def show_scene(ctx: commands.Context) -> None:
             if npc["notes"]:
                 detail += f" / {'、'.join(npc['notes'])}"
             lines.append(detail)
+
+    proposed_check = state.get("proposed_check")
+    if proposed_check:
+        lines.append(_format_proposed_check(proposed_check))
 
     pending_check = state.get("pending_check")
     if pending_check:

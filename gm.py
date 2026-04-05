@@ -28,6 +28,12 @@ SKILL_CHECK_RE = re.compile(
 SAN_CHECK_RE = re.compile(
     r"SAN(?:値)?チェックをお願いします[（(]成功値[:：]\s*(?P<target>\d+|現在のSAN値|現在のＳＡＮ値)[）)]"
 )
+SKILL_CHECK_OFFER_RE = re.compile(
+    r"【(?P<skill>[^】]+)】(?:で|の)?判定(?:が)?できます。?\s*成功値は(?P<target>\d+)です。?\s*判定しますか"
+)
+SAN_CHECK_OFFER_RE = re.compile(
+    r"SAN(?:値)?チェック(?:が)?(?:入ります|できます)。?\s*(?:現在のSAN値(?:が成功値|です))。?\s*判定しますか"
+)
 SCENE_H2_RE = re.compile(r"^##\s+(.+)$")
 SCENE_H3_RE = re.compile(r"^###\s+(.+)$")
 METADATA_LINE_RE = re.compile(r"^(?:>\s*)?(?:`+)?(?P<kind>CHECK|STATE)[:：]\s*(?P<payload>.+?)(?:`+)?$")
@@ -108,6 +114,7 @@ SCENE_KEYWORD_STOPWORDS = {
 @dataclass
 class GMTurn:
     reply: str
+    proposed_check: dict[str, Any] | None = None
     pending_check: dict[str, Any] | None = None
     state_update: dict[str, Any] | None = None
 
@@ -123,11 +130,33 @@ def _merge_nested_dict(base: dict[str, Any], update: dict[str, Any]) -> dict[str
     return merged
 
 
+def _infer_check_offer_from_reply(reply: str) -> dict[str, Any] | None:
+    skill_match = SKILL_CHECK_OFFER_RE.search(reply)
+    if skill_match:
+        return {
+            "type": "skill",
+            "phase": "offer",
+            "skill": skill_match.group("skill").strip(),
+            "target": int(skill_match.group("target")),
+            "reason": "",
+        }
+
+    if SAN_CHECK_OFFER_RE.search(reply):
+        return {
+            "type": "san",
+            "phase": "offer",
+            "reason": "",
+        }
+
+    return None
+
+
 def _infer_pending_check_from_reply(reply: str) -> dict[str, Any] | None:
     skill_match = SKILL_CHECK_RE.search(reply)
     if skill_match:
         return {
             "type": "skill",
+            "phase": "pending",
             "skill": skill_match.group("skill").strip(),
             "target": int(skill_match.group("target")),
             "reason": "",
@@ -138,6 +167,7 @@ def _infer_pending_check_from_reply(reply: str) -> dict[str, Any] | None:
         target_text = san_match.group("target").strip()
         payload: dict[str, Any] = {
             "type": "san",
+            "phase": "pending",
             "reason": "",
         }
         if target_text.isdigit():
@@ -180,6 +210,14 @@ def _normalize_scene_name(name: str) -> str:
     normalized = re.sub(r"^[A-Z]\.\s*", "", normalized)
     normalized = re.sub(r"[（(].*?[）)]", "", normalized)
     return normalized.strip()
+
+
+def _check_phase(payload: dict[str, Any]) -> str:
+    raw_phase = payload.get("phase", payload.get("status", payload.get("stage", "pending")))
+    phase = str(raw_phase).strip().lower()
+    if phase in {"offer", "proposal", "proposed", "confirm"}:
+        return "offer"
+    return "pending"
 
 
 def _extract_scene_aliases(scenario_text: str) -> list[tuple[str, set[str]]]:
@@ -389,6 +427,7 @@ class GMEngine:
 
     def _extract_metadata(self, content: str) -> GMTurn:
         visible_lines: list[str] = []
+        proposed_check: dict[str, Any] | None = None
         pending_check: dict[str, Any] | None = None
         state_update: dict[str, Any] | None = None
 
@@ -398,7 +437,10 @@ class GMEngine:
                 kind, payload = parsed
                 if kind == "CHECK":
                     if payload is not None:
-                        pending_check = payload
+                        if _check_phase(payload) == "offer":
+                            proposed_check = payload
+                        else:
+                            pending_check = payload
                 elif payload is not None:
                     state_update = payload if state_update is None else _merge_nested_dict(state_update, payload)
                 continue
@@ -409,10 +451,17 @@ class GMEngine:
         if not reply:
             reply = "(KP responded with metadata only)"
 
+        if proposed_check is None:
+            proposed_check = _infer_check_offer_from_reply(reply)
         if pending_check is None:
             pending_check = _infer_pending_check_from_reply(reply)
 
-        return GMTurn(reply=reply, pending_check=pending_check, state_update=state_update)
+        return GMTurn(
+            reply=reply,
+            proposed_check=proposed_check,
+            pending_check=pending_check,
+            state_update=state_update,
+        )
 
     def _build_system_prompt(self, session: Session) -> str:
         scenario = self._load_scenario(session.scenario_id)
