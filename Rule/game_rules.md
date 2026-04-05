@@ -1,71 +1,11 @@
-# Call of Cthulhu 7th Edition Quick-Start Rules (Core Rules Summary)
+# Call of Cthulhu 7th Edition — In-Play Rules
 
 > Source: Call of Cthulhu Quick-Start Rules, 7th Edition (Chaosium Inc.)
-> This document is a structured summary for AI Game Master reference.
+> This document is for the AI Game Master to reference during play.
 
 ---
 
-## 1. Investigator Creation
-
-### 1.1 Characteristics (8 stats)
-
-| Stat | Full Name    | Description                            |
-|------|-------------|----------------------------------------|
-| STR  | Strength     | Physical power                         |
-| CON  | Constitution | Health and resilience                  |
-| SIZ  | Size         | Height and weight combined             |
-| DEX  | Dexterity    | Agility and speed                      |
-| APP  | Appearance   | Attractiveness and charisma            |
-| INT  | Intelligence | Cleverness, logic, and intuition       |
-| POW  | Power        | Willpower, mind, and mental stability  |
-| EDU  | Education    | Formal schooling or life experience    |
-
-**Stat assignment (Quick-Start):** Distribute these values among the 8 stats: 40, 50, 50, 50, 60, 60, 70, 80.
-
-Each stat has three values:
-- **Full value** (e.g. 60)
-- **Half value** (Hard): Full / 2, round down (e.g. 30)
-- **Fifth value** (Extreme): Full / 5, round down (e.g. 12)
-
-### 1.2 Derived Attributes
-
-| Attribute         | Calculation                                    |
-|-------------------|------------------------------------------------|
-| Damage Bonus (DB) | Based on STR + SIZ (see table below)           |
-| Build             | Based on STR + SIZ (see table below)           |
-| Hit Points (HP)   | (CON + SIZ) / 10, round down                  |
-| Movement Rate     | 8 (for all human characters)                   |
-| Sanity (SAN)      | Equal to POW at game start                     |
-| Magic Points (MP) | Equal to POW / 5                               |
-| Luck              | Determined separately (2D6+6) * 5 or assigned  |
-
-**Damage Bonus & Build Table:**
-
-| STR + SIZ | Damage Bonus | Build |
-|-----------|-------------|-------|
-| 2-64      | -2          | -2    |
-| 65-84     | -1          | -1    |
-| 85-124    | +0          | 0     |
-| 125-164   | +1D4        | 1     |
-| 165-204   | +1D6        | 2     |
-
-### 1.3 Occupations & Skills
-
-**Occupation skill points:** Assign to 8 occupation skills + Credit Rating:
-- 1 skill at 70%
-- 2 skills at 60%
-- 3 skills at 50%
-- 3 skills at 40%
-
-**Personal interest skills:** Choose 4 non-occupation skills and add 20% to each base value.
-
-**Sample occupations:** Antiquarian, Author, Dilettante, Doctor, Journalist, Detective, Private Investigator, Professor.
-
----
-
-## 2. Game System
-
-### 2.1 Skill Rolls & Difficulty
+## 1. Skill Rolls & Difficulty
 
 A skill roll uses D100 (percentile dice). Roll equal to or under the target number to succeed.
 
@@ -75,14 +15,14 @@ A skill roll uses D100 (percentile dice). Roll equal to or under the target numb
 | Hard        | Half value or less   | Difficult task                       |
 | Extreme     | Fifth value or less  | Near the limit of human ability      |
 
-### 2.2 Pushing a Roll
+### 1.1 Pushing a Roll
 
 If a skill roll fails, the player may "push" the roll (retry once) if their action is plausible. However:
 - The Keeper sets higher stakes for a pushed roll.
 - If the pushed roll also fails, the Keeper imposes a severe consequence.
 - Combat rolls **cannot** be pushed.
 
-### 2.3 Opposed Rolls
+### 1.2 Opposed Rolls
 
 When two characters act against each other:
 1. Both roll their relevant skill.
@@ -91,14 +31,14 @@ When two characters act against each other:
 4. If tied, the character with the higher skill value wins.
 5. If skill values are also tied, both roll D100; lower result wins.
 
-### 2.4 Bonus & Penalty Dice
+### 1.3 Bonus & Penalty Dice
 
 - **Bonus die:** Roll an extra "tens" die; use the **lower** (better) result.
 - **Penalty die:** Roll an extra "tens" die; use the **higher** (worse) result.
 - One bonus and one penalty cancel each other out.
 - Primarily used in opposed rolls and situational advantages/disadvantages.
 
-### 2.5 Luck Rolls
+### 1.4 Luck Rolls
 
 Used when external circumstances matter (not skill or ability).
 - Roll D100 against current Luck value.
@@ -106,77 +46,49 @@ Used when external circumstances matter (not skill or ability).
 
 ---
 
-## 3. Skills Reference
+## 2. Skills Quick Reference (In-Play)
 
 ### Combat Skills
-- **Fighting (Brawl):** Unarmed combat, knives, clubs, simple weapons. Base: 25%
-- **Fighting (Sword/Axe/Spear/etc.):** Specialized melee weapons. Base: varies
-- **Firearms (Handgun/Rifle-Shotgun/Bow/etc.):** Ranged weapons. Base: varies
-- **Dodge:** Instinctively avoid attacks. Base: DEX/2. Can dodge multiple times per round (once per attack).
+- **Fighting (Brawl):** Unarmed, knives, clubs, simple weapons. Base: 25%
+- **Firearms (Handgun/Rifle-Shotgun/etc.):** Ranged weapons. Base: varies
+- **Dodge:** Avoid attacks. Base: DEX/2. Can dodge multiple times per round (once per attack).
 
 ### Investigation Skills
 - **Spot Hidden:** Find hidden objects, notice clues, detect ambushes.
 - **Listen:** Hear and interpret sounds, eavesdrop.
-- **Library Use:** Find specific information in libraries or document collections (takes several hours).
+- **Library Use:** Find information in document collections (takes hours).
 - **Psychology:** Read motivations, detect lies. Keeper may roll secretly.
 
 ### Social Skills (Interpersonal)
 - **Intimidate:** Frighten or coerce. Opposed by Intimidate or Psychology.
-- **Fast Talk:** Verbal deception and misdirection. Opposed by Fast Talk or Psychology.
-- **Persuade:** Logical argument to convince (takes 30+ minutes). Opposed by Persuade or Psychology.
-- **Charm:** Physical attractiveness, flattery, warmth. Opposed by Charm or Psychology.
+- **Fast Talk:** Verbal deception. Opposed by Fast Talk or Psychology.
+- **Persuade:** Logical argument (takes 30+ min). Opposed by Persuade or Psychology.
+- **Charm:** Attractiveness, flattery. Opposed by Charm or Psychology.
 
-### Knowledge & Academic Skills
-- **Occult:** Recognize occult tools, terms, concepts, and folklore.
-- **History:** Recall historical details, events, significance.
-- **Archaeology:** Date and identify cultural artifacts, detect forgeries.
-- **Anthropology:** Identify and understand cultural practices.
-- **Science (specialty):** Astronomy, Biology, Chemistry, Geology, Pharmacy, Physics, etc.
-- **Natural World:** Traditional (non-scientific) knowledge of plants, animals, ecosystems.
-- **Law:** Knowledge of relevant laws, legal procedures, courtroom tactics.
-- **Accounting:** Understand financial records, track money flows.
-
-### Practical Skills
-- **First Aid:** Emergency medical treatment within 1 hour of injury. Restores 1 HP. Can wake unconscious characters. Cannot treat disease.
-- **Medicine:** Diagnose and treat injuries/disease (takes 1+ hour). Restores 1D3 HP (in addition to First Aid). Must stabilize dying characters with First Aid first.
-- **Mechanical Repair:** Fix or build machines, basic carpentry, plumbing.
-- **Electrical Repair:** Fix or assemble electrical equipment.
-- **Locksmith:** Pick locks, hotwire cars, bypass alarms.
-- **Drive (Automobile):** Operate cars and light trucks.
-- **Pilot (specialty):** Operate boats, aircraft, airships.
-- **Navigate:** Find routes, read maps, estimate distances.
-- **Ride:** Horseback riding and animal care.
-- **Swim:** Swim and stay afloat. Failed pushed roll may cause HP loss or drowning.
-- **Climb:** Scale vertical surfaces with or without equipment.
-- **Jump:** Vertical or horizontal leaps. Success on a fall halves damage.
-- **Stealth:** Move silently, hide, avoid detection.
-- **Disguise:** Alter appearance to look like someone else.
-- **Sleight of Hand:** Hide, conceal, or manipulate objects skillfully.
-- **Throw:** Hit a target with a thrown object. Range: STR/5 meters.
-- **Survival (specialty):** Survive extreme environments (wilderness, arctic, desert, sea).
-- **Track:** Follow trails of people, vehicles, or animals.
-- **Heavy Machinery:** Operate trains, bulldozers, large land machines.
+### Key Practical Skills
+- **First Aid:** Within 1 hour of injury. Restores 1 HP. Wakes unconscious. Cannot treat disease.
+- **Medicine:** Diagnose/treat (1+ hour, needs equipment). Restores 1D3 HP. Must stabilize dying with First Aid first.
+- **Locksmith / Mechanical Repair / Electrical Repair:** Fix, bypass, or build things.
+- **Stealth:** Move silently, hide.
+- **Climb / Jump / Swim / Drive / Navigate / Survival / Track:** Physical and outdoor skills.
 
 ### Special Skills
-- **Credit Rating:** Measures wealth and social class (0% = destitute, 10-49% = average, 50-89% = wealthy, 90-98% = rich, 99% = super-rich).
-- **Cthulhu Mythos:** Understanding of the Mythos. Cannot be assigned at character creation. Gained only through encounters with Mythos entities or reading forbidden tomes.
-- **Psychoanalysis:** Treat mental illness. Monthly roll: success restores 1D3 SAN. Fumble loses 1D6 SAN.
-- **Other Language (specify):** Understand, speak, read, and write a non-native language.
-- **Own Language:** Native language. Base = EDU value.
-- **Art/Craft (specialty):** Create, repair, or perform in a specific artistic or craft discipline.
+- **Cthulhu Mythos:** Gained only through Mythos encounters. Erodes maximum SAN.
+- **Psychoanalysis:** Treat insanity. Monthly roll: success = +1D3 SAN, fumble = -1D6 SAN.
+- **Credit Rating:** Wealth/class indicator used for social context.
 
 ---
 
-## 4. Sanity (SAN)
+## 3. Sanity (SAN)
 
-### 4.1 Sanity Checks
+### 3.1 Sanity Checks
 
 When encountering Mythos horrors or traumatic events:
 1. Roll D100 against current SAN value.
 2. **Success (roll <= SAN):** Lose the amount before the slash (e.g., "0/1D6" = lose 0).
 3. **Failure (roll > SAN):** Lose the amount after the slash (e.g., "0/1D6" = lose 1D6).
 
-### 4.2 Temporary Insanity
+### 3.2 Temporary Insanity
 
 If 5+ SAN points lost in a single check:
 1. Roll D100 against INT.
@@ -197,13 +109,13 @@ If 5+ SAN points lost in a single check:
 | 9    | Phobia: develop a new fear (claustrophobia, etc.)         | 1D10 rounds |
 | 10   | Mania: develop a new compulsion (cleaning, lying, etc.)   | 1D10 rounds |
 
-### 4.3 Reality Check
+### 3.3 Reality Check
 
 An insane investigator may attempt a SAN roll to see through a delusion:
 - **Success:** See through the hallucination.
 - **Failure:** Sink deeper into madness.
 
-### 4.4 SAN Recovery
+### 3.4 SAN Recovery
 
 - Completing a scenario successfully may restore a few SAN points.
 - Psychoanalysis: 1D3 SAN per month on success; lose 1D6 SAN on fumble.
@@ -211,13 +123,13 @@ An insane investigator may attempt a SAN roll to see through a delusion:
 
 ---
 
-## 5. Combat
+## 4. Combat
 
-### 5.1 Initiative
+### 4.1 Initiative
 
 All characters act in **DEX order** (highest first) each round.
 
-### 5.2 Melee Combat
+### 4.2 Melee Combat
 
 On their turn, a character may attack. When attacked, a defender chooses:
 - **Dodge (Dodge skill):** Attacker must achieve a better success level than the defender.
@@ -228,7 +140,7 @@ Compare success levels:
 - If attacker and dodger tie → **dodger wins**.
 - If attacker and fighter-back tie → **attacker wins**.
 
-### 5.3 Weapons & Damage
+### 4.3 Weapons & Damage
 
 | Weapon                | Damage                              |
 |-----------------------|-------------------------------------|
@@ -241,7 +153,7 @@ Compare success levels:
 | Shotgun (<=10m)       | 4D6 (<=20m: 2D6, no impale)       |
 | Rifle                 | 2D6+4                              |
 
-### 5.4 Extreme Damage
+### 4.4 Extreme Damage
 
 When an attack achieves Extreme success:
 - **Blunt weapons:** Maximum damage + maximum DB.
@@ -249,29 +161,29 @@ When an attack achieves Extreme success:
 
 Example: Handgun Extreme = 1D10 + 10 damage.
 
-### 5.5 Firearms Rules
+### 4.5 Firearms Rules
 
 - **Prepared firearm:** Act at DEX + 50 for initiative.
 - **Multiple shots per round (handgun):** Each additional shot adds 1 penalty die.
 - **Point-blank range (DEX*6% meters):** 1 bonus die on the attack roll.
 - **Diving for cover (Dodge):** If successful, attacker gets 1 penalty die. Defender loses their next attack action.
 
-### 5.6 Combat Maneuvers
+### 4.6 Combat Maneuvers
 
 Non-damage actions in melee (disarm, trip, grapple) use Fighting (Brawl):
 - Resolved like a normal melee attack.
 - Compare Build values: if attacker's Build is lower, they get 1 penalty die per point difference (max 2).
 - If target's Build exceeds attacker's by 3+, maneuver automatically fails.
 
-### 5.7 Outnumbered
+### 4.7 Outnumbered
 
 After a character has responded (dodge or fight back) once in a round, all subsequent melee attacks against them in that round receive 1 bonus die. Does not apply to firearms.
 
 ---
 
-## 6. Hit Points, Wounds & Healing
+## 5. Hit Points, Wounds & Healing
 
-### 6.1 Damage & Consciousness
+### 5.1 Damage & Consciousness
 
 - HP reduced by damage. Cannot go below 0.
 - HP reaches 0 → unconscious.
@@ -282,7 +194,7 @@ After a character has responded (dodge or fight back) once in a round, all subse
   - Only First Aid can stabilize a dying character.
 - Single attack damage > max HP → instant death.
 
-### 6.2 Healing
+### 5.2 Healing
 
 | Condition              | Healing Rate                                              |
 |------------------------|-----------------------------------------------------------|
@@ -295,7 +207,7 @@ Major wound status is removed when: Extreme success on weekly CON roll, OR curre
 
 ---
 
-## 7. Other Forms of Damage
+## 6. Other Forms of Damage
 
 | Severity     | Damage | Examples                                                   |
 |-------------|--------|------------------------------------------------------------|
@@ -312,7 +224,7 @@ Major wound status is removed when: Extreme success on weekly CON roll, OR curre
 
 ---
 
-## 8. Rewards of Success (Skill Improvement)
+## 7. Rewards of Success (Skill Improvement)
 
 At the end of a scenario:
 1. For each skill with a check mark (used successfully during play):
@@ -324,7 +236,7 @@ This means: the higher a skill is, the harder it is to improve.
 
 ---
 
-## 9. Dice Notation Reference
+## 8. Dice Notation Reference
 
 | Notation | Meaning                                    |
 |----------|--------------------------------------------|

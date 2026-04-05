@@ -31,10 +31,8 @@ class GMEngine:
         self._rules_text = self._load_rules()
 
     def _load_rules(self) -> str:
-        rules_parts: list[str] = []
-        for path in sorted(RULES_DIR.glob("*.md")):
-            rules_parts.append(path.read_text(encoding="utf-8"))
-        return "\n\n".join(rules_parts)
+        path = RULES_DIR / "game_rules.md"
+        return path.read_text(encoding="utf-8")
 
     def _load_scenario(self, scenario_id: str) -> str:
         if scenario_id not in self._scenario_cache:
