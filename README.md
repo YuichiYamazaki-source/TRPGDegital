@@ -69,6 +69,19 @@ All commands are executed in the `#trpg-main` channel on the **Palworld** Discor
 | `!roll` | Roll 1d100 (default for CoC skill checks) |
 | `!roll <dice>` | Roll custom dice (e.g., `2d6`, `1d10+5`) |
 
+### Character Creation
+
+| Command                        | Description                              |
+| ------------------------------ | ---------------------------------------- |
+| `!cstart`                      | Start character creation                 |
+| `!croll`                       | Roll attributes (3d6×5 for each stat)    |
+| `!cjob <job_name>`             | Select a job and gain initial skills     |
+| `!cskill <skill_name> <value>` | Allocate skill points                    |
+| `!cbuy <item_name>`            | Purchase an item and add it to inventory |
+| `!cmeta <name>`                | Finalize and save the character          |
+| `!cstatus`                     | Show current character creation status   |
+
+
 ---
 
 ## Project Structure
