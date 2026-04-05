@@ -207,24 +207,102 @@ async def char_buy(ctx: commands.Context, item: str):
     })
 
     await ctx.send(f"{item} を購入")
+    
 
-
+# --- バックストーリー ---
+BACKGROUND_QUESTIONS = [
+    ("appearance", "容姿・特徴は？"),
+    ("ideology", "イデオロギー／信念は？"),
+    ("important_people", "重要な人々は？"),
+    ("meaningful_places", "意味のある場所は？"),
+    ("treasured_possessions", "秘蔵の品は？"),
+    ("traits", "特徴は？"),
+    ("injuries", "負傷や傷跡は？"),
+    ("phobias", "恐怖症やマニアは？"),
+    ("tomes", "魔道書や呪文は？"),
+    ("encounters", "遭遇した超自然の存在は？")
+]
+    
 @bot.command(name="cmeta")
-async def char_meta(ctx: commands.Context, name: str):
+async def char_meta(ctx: commands.Context):
     build_id = _get_build_id(ctx)
     if not build_id:
         await ctx.send("!cstart を先に実行してください")
         return
 
-    result = await api.post("/character/meta", {
-        "build_id": build_id,
-        "name": name
-    })
+    def check(m: discord.Message):
+        return m.author == ctx.author and m.channel == ctx.channel
 
-    user_builds.pop(ctx.author.id, None)
+    await ctx.send("キャラクター作成の仕上げを行います！（60秒以内に回答）")
 
-    await ctx.send(f"完成！ {result['name']} / ID: `{result['id']}`")
+    # --- 名前 ---
+    await ctx.send("キャラクター名は？")
+    try:
+        msg = await bot.wait_for("message", check=check, timeout=60)
+    except Exception:
+        await ctx.send("タイムアウトしました")
+        return
+    name = msg.content.strip()
 
+    # --- 年齢 ---
+    await ctx.send("年齢は？")
+    try:
+        msg = await bot.wait_for("message", check=check, timeout=60)
+    except Exception:
+        await ctx.send("タイムアウトしました")
+        return
+    age = msg.content.strip()
+
+    # --- 性別 ---
+    await ctx.send("性別は？")
+    try:
+        msg = await bot.wait_for("message", check=check, timeout=60)
+    except Exception:
+        await ctx.send("タイムアウトしました")
+        return
+    gender = msg.content.strip()
+
+    answers = {}
+
+    for key, question in BACKGROUND_QUESTIONS:
+        await ctx.send(question)
+
+        try:
+            msg = await bot.wait_for("message", check=check, timeout=60)
+        except Exception:
+            await ctx.send("タイムアウトしました")
+            return
+
+        content = msg.content.strip()
+
+        if content.lower() == "cancel":
+            await ctx.send("作成を中断しました")
+            return
+        elif content.lower() == "skip":
+            answers[key] = ""
+        else:
+            answers[key] = content
+
+    # --- API送信 ---
+    try:
+        result = await api.post("/character/meta", {
+            "build_id": build_id,
+            "name": name,
+            "age": age,
+            "gender": gender,
+            **answers
+        })
+
+        user_builds.pop(ctx.author.id, None)
+
+        await ctx.send(
+            f"🎉 キャラクター完成！\n"
+            f"名前: {result['name']}（{age}歳 / {gender}）\n"
+            f"ID: `{result['id']}`"
+        )
+
+    except aiohttp.ClientError:
+        await ctx.send("APIエラー：保存失敗")
 
 @bot.command(name="cstatus")
 async def char_status(ctx: commands.Context):

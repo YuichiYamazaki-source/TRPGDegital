@@ -75,13 +75,25 @@ def create_empty_character(owner: str):
         "id": str(uuid.uuid4()),
         "owner": owner,
         "step": 1,
-       "remaining": 0,
+        "remaining": 0,
         "character": {
             "meta": {},
             "attributes": {},
             "derived": {},
             "skills": {},
-            "inventory": []
+            "inventory": [],
+            "background": {
+                "appearance": "",
+                "ideology": "",
+                "important_people": "",
+                "meaningful_places": "",
+                "treasured_possessions": "",
+                "traits": "",
+                "injuries": "",
+                "phobias": "",
+                "tomes": "",
+                "encounters": ""
+            }
         }
     }
 
@@ -273,21 +285,53 @@ def buy_item(build_id: str, item: str):
     return data
 
 
-@app.post("/character/meta")
-def finalize_character(build_id: str, name: str):
-    data = load_build(build_id)
+class CharacterMetaRequest(BaseModel):
+    build_id: str
+    name: str
+    age: str = ""
+    gender: str = ""
+    appearance: str = ""
+    ideology: str = ""
+    important_people: str = ""
+    meaningful_places: str = ""
+    treasured_possessions: str = ""
+    traits: str = ""
+    injuries: str = ""
+    phobias: str = ""
+    tomes: str = ""
+    encounters: str = ""
 
+
+@app.post("/character/meta")
+def finalize_character(req: CharacterMetaRequest):
+    data = load_build(req.build_id)
     char = data["character"]
 
-    char_id = str(uuid.uuid4())
-    char["id"] = char_id
-    char["name"] = name
+    # --- メタ情報 ---
+    char["meta"] = {
+        "name": req.name,
+        "age": req.age,
+        "gender": req.gender
+    }
 
-    out_path = CHARACTERS_DIR / f"{char_id}.json"
-    out_path.write_text(json.dumps(char, ensure_ascii=False, indent=2), encoding="utf-8")
+    # --- バックストーリー ---
+    char["background"] = {
+        "appearance": req.appearance,
+        "ideology": req.ideology,
+        "important_people": req.important_people,
+        "meaningful_places": req.meaningful_places,
+        "treasured_possessions": req.treasured_possessions,
+        "traits": req.traits,
+        "injuries": req.injuries,
+        "phobias": req.phobias,
+        "tomes": req.tomes,
+        "encounters": req.encounters
+    }
 
-    get_build_path(build_id).unlink(missing_ok=True)
+    save_build(req.build_id, data)
 
-    CHARACTERS[char_id] = char
-
-    return char
+    # 必要なら完成キャラとして保存
+    return {
+        "id": data["id"],
+        "name": req.name
+    }
