@@ -1,0 +1,27 @@
+---
+title: GM Agent Architecture
+---
+graph TD
+    User["User"]
+    GM["GM (Keeper)"]
+    Scenario["Analyzed Scenario"]
+    Rules["Rulebooks"]
+    Env["Environment Status"]
+    Player["Real-time Player Status"]
+    NPC["Real-time NPC Status"]
+
+    subgraph TRPG_Play_Agent["TRPG Play Agent"]
+        GM
+        Scenario
+        Rules
+        Env
+        Player
+        NPC
+    end
+
+    User <-->|"text interaction"| GM
+    GM -->|"retrieve"| Scenario
+    GM -->|"retrieve"| Rules
+    GM <-->|"query / update"| Env
+    GM <-->|"query / update"| Player
+    GM <-->|"query / update"| NPC
