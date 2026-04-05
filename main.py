@@ -21,7 +21,7 @@ app = FastAPI(title="CoC AI GM API")
 log = logging.getLogger(__name__)
 
 session_manager = SessionManager()
-gm_engine = GMEngine()
+# gm_engine = GMEngine()
 
 # ===== ディレクトリ =====
 
