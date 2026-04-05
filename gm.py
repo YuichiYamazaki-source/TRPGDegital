@@ -16,6 +16,7 @@ load_dotenv()
 log = logging.getLogger(__name__)
 
 SCENARIOS_DIR = Path("scenarios")
+RULES_DIR = Path("Rule")
 SYSTEM_PROMPT_PATH = Path("prompts/system_prompt.txt")
 
 
@@ -27,6 +28,13 @@ class GMEngine:
         self.client = AsyncOpenAI(api_key=api_key)
         self.system_prompt_template = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
         self._scenario_cache: dict[str, str] = {}
+        self._rules_text = self._load_rules()
+
+    def _load_rules(self) -> str:
+        rules_parts: list[str] = []
+        for path in sorted(RULES_DIR.glob("*.md")):
+            rules_parts.append(path.read_text(encoding="utf-8"))
+        return "\n\n".join(rules_parts)
 
     def _load_scenario(self, scenario_id: str) -> str:
         if scenario_id not in self._scenario_cache:
@@ -42,6 +50,7 @@ class GMEngine:
             indent=2,
         )
         return self.system_prompt_template.format(
+            rules=self._rules_text,
             scenario=scenario,
             characters=characters_text,
         )

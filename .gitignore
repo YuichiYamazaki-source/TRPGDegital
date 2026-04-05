@@ -23,3 +23,12 @@ Thumbs.db
 
 # Claude
 .claude/
+
+# PDF source files (large binaries)
+Rule/*.pdf
+
+# Temporary files
+pdf_output.txt
+pdf_full_output.txt
+read_pdf.py
+extract_pdf.py
