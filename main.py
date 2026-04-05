@@ -188,17 +188,15 @@ def _apply_state_update(session: Session, update: dict[str, Any] | None) -> None
     elif scene_changed:
         environment.scene_highlights = []
 
-    scene_goal = update.get("scene_goal")
-    if isinstance(scene_goal, str):
-        environment.scene_goal = scene_goal.strip()
-    elif scene_changed:
-        environment.scene_goal = ""
+    if "scene_goal" in update:
+        scene_goal = update.get("scene_goal")
+        if isinstance(scene_goal, str) and scene_goal.strip():
+            environment.scene_goal = scene_goal.strip()
 
-    unresolved_threads = _string_list(update.get("unresolved_threads"))
-    if unresolved_threads is not None:
-        environment.unresolved_threads = unresolved_threads
-    elif scene_changed:
-        environment.unresolved_threads = []
+    if "unresolved_threads" in update:
+        unresolved_threads = _string_list(update.get("unresolved_threads"))
+        if unresolved_threads:
+            environment.unresolved_threads = unresolved_threads
 
     _extend_unique(environment.clues, update.get("clues_added"))
     _extend_unique(environment.shared_inventory, update.get("shared_inventory_added"))

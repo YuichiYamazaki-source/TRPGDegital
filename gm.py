@@ -31,8 +31,17 @@ SAN_CHECK_RE = re.compile(
 SKILL_CHECK_OFFER_RE = re.compile(
     r"【(?P<skill>[^】]+)】(?:で|の)?判定(?:が)?できます。?\s*成功値は(?P<target>\d+)です。?\s*判定しますか"
 )
+SKILL_CHECK_OFFER_FALLBACK_RE = re.compile(
+    r"【(?P<skill>[^】]+)】(?:で|の)?判定(?:が)?(?:必要です|必要になります|必要だ|できます)。*?判定しますか"
+)
+SKILL_USAGE_OFFER_RE = re.compile(
+    r"[『「【](?P<skill>[^』」】]+)[』」】](?:の技能)?を使(?:って|い).*?[？?]"
+)
 SAN_CHECK_OFFER_RE = re.compile(
     r"SAN(?:値)?チェック(?:が)?(?:入ります|できます)。?\s*(?:現在のSAN値(?:が成功値|です))。?\s*判定しますか"
+)
+SAN_CHECK_OFFER_FALLBACK_RE = re.compile(
+    r"SAN(?:値)?チェック(?:が)?(?:必要です|必要になります|入ります|必要だ|できます)。*?判定しますか"
 )
 SCENE_H2_RE = re.compile(r"^##\s+(.+)$")
 SCENE_H3_RE = re.compile(r"^###\s+(.+)$")
@@ -141,12 +150,49 @@ def _infer_check_offer_from_reply(reply: str) -> dict[str, Any] | None:
             "reason": "",
         }
 
+    skill_fallback_match = SKILL_CHECK_OFFER_FALLBACK_RE.search(reply)
+    if skill_fallback_match:
+        payload: dict[str, Any] = {
+            "type": "skill",
+            "phase": "offer",
+            "skill": skill_fallback_match.group("skill").strip(),
+            "reason": "",
+        }
+        target_match = re.search(r"成功値(?:は|：|:)\s*(?P<target>\d+)", reply)
+        if target_match:
+            payload["target"] = int(target_match.group("target"))
+        return payload
+
+    skill_usage_match = SKILL_USAGE_OFFER_RE.search(reply)
+    if skill_usage_match:
+        payload = {
+            "type": "skill",
+            "phase": "offer",
+            "skill": skill_usage_match.group("skill").strip(),
+            "reason": "",
+        }
+        target_match = re.search(r"成功値(?:は|：|:)\s*(?P<target>\d+)", reply)
+        if target_match:
+            payload["target"] = int(target_match.group("target"))
+        return payload
+
     if SAN_CHECK_OFFER_RE.search(reply):
         return {
             "type": "san",
             "phase": "offer",
             "reason": "",
         }
+
+    if SAN_CHECK_OFFER_FALLBACK_RE.search(reply):
+        payload = {
+            "type": "san",
+            "phase": "offer",
+            "reason": "",
+        }
+        target_match = re.search(r"成功値(?:は|：|:)\s*(?P<target>\d+)", reply)
+        if target_match:
+            payload["target"] = int(target_match.group("target"))
+        return payload
 
     return None
 
@@ -175,6 +221,72 @@ def _infer_pending_check_from_reply(reply: str) -> dict[str, Any] | None:
         return payload
 
     return None
+
+
+def _normalize_mixed_check_reply(
+    reply: str,
+    proposed_check: dict[str, Any] | None,
+    pending_check: dict[str, Any] | None,
+) -> tuple[str, dict[str, Any] | None, dict[str, Any] | None]:
+    if pending_check is None or "判定しますか" not in reply:
+        return reply, proposed_check, pending_check
+
+    if proposed_check is None:
+        proposed_check = dict(pending_check)
+        proposed_check["phase"] = "offer"
+
+    pending_check = None
+    cleaned_reply = SKILL_CHECK_RE.sub("", reply)
+    cleaned_reply = SAN_CHECK_RE.sub("", cleaned_reply)
+    cleaned_reply = re.sub(r"\n{3,}", "\n\n", cleaned_reply)
+    cleaned_reply = re.sub(r"[ 　]+", " ", cleaned_reply)
+    cleaned_reply = cleaned_reply.strip()
+    return cleaned_reply, proposed_check, pending_check
+
+
+def _render_check_text(payload: dict[str, Any], phase: str) -> str:
+    kind = str(payload.get("type", payload.get("kind", ""))).strip().lower()
+    target = payload.get("target")
+
+    if kind == "skill":
+        skill = str(payload.get("skill", payload.get("skill_name", "技能"))).strip() or "技能"
+        if phase == "offer":
+            if target is not None:
+                return f"ここで【{skill}】で判定できます。成功値は{int(target)}です。判定しますか？"
+            return f"ここで【{skill}】で判定できます。判定しますか？"
+        if target is not None:
+            return f"【{skill}】の判定をお願いします（成功値：{int(target)}）"
+        return f"【{skill}】の判定をお願いします。"
+
+    if phase == "offer":
+        if target is not None:
+            return f"SAN値チェックが必要です。成功値は{target}です。判定しますか？"
+        return "SAN値チェックが必要です。判定しますか？"
+    if target is not None:
+        return f"SAN値チェックをお願いします（成功値：{target}）"
+    return "SAN値チェックをお願いします。"
+
+
+def _synthesize_metadata_reply(
+    state_update: dict[str, Any] | None,
+    proposed_check: dict[str, Any] | None,
+    pending_check: dict[str, Any] | None,
+) -> str:
+    parts: list[str] = []
+
+    if isinstance(state_update, dict):
+        scene_summary = state_update.get("scene_summary")
+        if isinstance(scene_summary, str) and scene_summary.strip():
+            parts.append(scene_summary.strip())
+
+    if proposed_check is not None:
+        parts.append(_render_check_text(proposed_check, "offer"))
+    elif pending_check is not None:
+        parts.append(_render_check_text(pending_check, "pending"))
+
+    if parts:
+        return "\n\n".join(parts)
+    return "(KP responded with metadata only)"
 
 
 def _parse_metadata_line(line: str) -> tuple[str, dict[str, Any] | None] | None:
@@ -405,6 +517,48 @@ def _summarize_scene(reply: str) -> str:
     return summary[:180]
 
 
+def _infer_scene_goal(scene_name: str, scenario_text: str, reply: str, previous_goal: str) -> str:
+    if previous_goal.strip():
+        return previous_goal.strip()
+
+    if "地下" in scene_name:
+        return "その場の異変の正体を見極め、危険への対処法を探る"
+    if "書斎" in scene_name:
+        return "資料や痕跡から事態の背景を探る"
+    if "玄関" in scene_name or scene_name == "導入":
+        if "行方不明" in scenario_text or "失踪" in scenario_text:
+            return "現場の異変と関係者の行方を探る"
+        return "現場の異変と次の手がかりを探る"
+    if "NPC" in reply or "人影" in reply:
+        return "現れた存在の正体と目的を探る"
+    return "周囲の異変の原因と次の手がかりを探る"
+
+
+def _infer_unresolved_threads(scene_name: str, previous_threads: list[str]) -> list[str]:
+    if previous_threads:
+        return previous_threads
+
+    if "地下" in scene_name:
+        return [
+            "目の前の異変の正体は何か",
+            "どうすれば危険を止められるか",
+        ]
+    if "書斎" in scene_name:
+        return [
+            "散乱した資料は何を示しているのか",
+            "地下へ続く手掛かりはどこにあるのか",
+        ]
+    if "玄関" in scene_name or scene_name == "導入":
+        return [
+            "足跡の先に誰がいるのか",
+            "壁の模様は何を意味するのか",
+        ]
+    return [
+        "周囲の異変は何を意味するのか",
+        "次の手掛かりはどこにあるのか",
+    ]
+
+
 class GMEngine:
     def __init__(self) -> None:
         api_key = os.getenv("OPENAI_API_KEY")
@@ -455,6 +609,9 @@ class GMEngine:
             proposed_check = _infer_check_offer_from_reply(reply)
         if pending_check is None:
             pending_check = _infer_pending_check_from_reply(reply)
+        reply, proposed_check, pending_check = _normalize_mixed_check_reply(reply, proposed_check, pending_check)
+        if reply == "(KP responded with metadata only)":
+            reply = _synthesize_metadata_reply(state_update, proposed_check, pending_check)
 
         return GMTurn(
             reply=reply,
@@ -517,6 +674,24 @@ class GMEngine:
             inferred_scene = _infer_scene_from_texts(scenario_text, message, turn.reply)
             if inferred_scene is not None:
                 turn.state_update["scene"] = inferred_scene
+
+        current_scene = str(turn.state_update.get("scene") or session.environment.scene or "導入").strip()
+
+        scene_goal = turn.state_update.get("scene_goal")
+        if not isinstance(scene_goal, str) or not scene_goal.strip():
+            turn.state_update["scene_goal"] = _infer_scene_goal(
+                current_scene,
+                scenario_text,
+                turn.reply,
+                session.environment.scene_goal,
+            )
+
+        unresolved_threads = turn.state_update.get("unresolved_threads")
+        if not isinstance(unresolved_threads, list) or not unresolved_threads:
+            turn.state_update["unresolved_threads"] = _infer_unresolved_threads(
+                current_scene,
+                list(session.environment.unresolved_threads),
+            )
 
         if turn.state_update and "scene_summary" not in turn.state_update:
             scene_summary = _summarize_scene(turn.reply)
