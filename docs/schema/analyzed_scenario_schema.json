@@ -1,0 +1,334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Analyzed Scenario",
+  "description": "LLM-preprocessed scenario data for TRPG GM agent consumption. Master data only — runtime State and Cache are managed separately.",
+  "type": "object",
+  "required": ["metadata", "locations", "characters", "clues", "events", "information_structure"],
+  "properties": {
+
+    "metadata": {
+      "type": "object",
+      "description": "Scenario-level attributes that shape GM tone and pacing.",
+      "required": ["title", "summary", "setting", "pacing", "secrecy_level", "tone", "chaos_tolerance", "victory_condition", "defeat_conditions"],
+      "properties": {
+        "title":            { "type": "string", "description": "Scenario title." },
+        "summary":          { "type": "string", "description": "Keeper-facing synopsis of the scenario." },
+        "setting":          { "type": "string", "description": "Location and backdrop description." },
+        "pacing":           { "type": "string", "enum": ["slow", "normal", "fast"], "description": "Overall progression speed." },
+        "secrecy_level":    { "type": "string", "enum": ["low", "medium", "high"], "description": "How tightly information is guarded across the scenario." },
+        "tone":             { "type": "string", "description": "Atmosphere and mood (e.g. gothic horror, cosmic dread, noir)." },
+        "chaos_tolerance":  { "type": "string", "enum": ["low", "medium", "high"], "description": "How much player deviation the scenario can absorb." },
+        "victory_condition": {
+          "type": "string",
+          "description": "Directional goal — NOT a checklist. Describes the tendency of a successful resolution."
+        },
+        "defeat_conditions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Directional failure tendencies — NOT strict fail-states."
+        }
+      }
+    },
+
+    "locations": {
+      "type": "array",
+      "description": "All explorable locations in the scenario.",
+      "items": {
+        "type": "object",
+        "required": ["id", "description"],
+        "properties": {
+          "id":          { "type": "string" },
+          "description": { "type": "string", "description": "Narrative description for GM flavor text." },
+
+          "access": {
+            "type": "object",
+            "description": "How investigators can reach this location.",
+            "properties": {
+              "access_paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "conditions": {
+                      "type": "object",
+                      "description": "Prerequisites to use this path (has_clue, npc_permission, time, etc.).",
+                      "additionalProperties": true
+                    },
+                    "method_type":   { "type": "string", "description": "How the path is traversed (e.g. walk, break-in, persuasion)." },
+                    "risk_modifier": { "type": "string", "description": "Additional risk introduced by using this path." }
+                  }
+                }
+              }
+            }
+          },
+
+          "perception": {
+            "type": "object",
+            "description": "How observable the location and its contents are.",
+            "properties": {
+              "visibility_level":  { "type": "string", "enum": ["obvious", "noticeable", "hidden", "secret"] },
+              "obscurity_factors": { "type": "string", "description": "What makes observation difficult (darkness, clutter, magic, etc.)." }
+            }
+          },
+
+          "search": {
+            "type": "object",
+            "description": "How deep investigation can go.",
+            "properties": {
+              "depth_profile": { "type": "string", "description": "Gradient of discoverable content from surface to deep search." },
+              "notes":         { "type": "string" }
+            }
+          },
+
+          "risk": {
+            "type": "array",
+            "description": "Risks present at this location.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type":  { "type": "string", "enum": ["detection", "physical", "social", "escalation"] },
+                "level": { "type": "string", "enum": ["none", "low", "medium", "high", "extreme"] }
+              }
+            }
+          },
+
+          "responses": {
+            "type": "array",
+            "description": "Location reactions to investigator actions (e.g. intrusion response).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "trigger":    { "type": "string" },
+                "conditions": { "type": "string" },
+                "effects":    { "type": "string" }
+              }
+            }
+          },
+
+          "connections": {
+            "type": "array",
+            "description": "Links to other locations.",
+            "items": {
+              "type": "object",
+              "required": ["target_location_id"],
+              "properties": {
+                "target_location_id": { "type": "string" },
+                "conditions":         { "type": "string" },
+                "traversal_type":     { "type": "string" }
+              }
+            }
+          },
+
+          "variations": {
+            "type": "array",
+            "description": "Temporal or conditional changes to the location.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "when":    { "type": "string", "description": "Condition or time trigger." },
+                "changes": { "type": "string", "description": "What changes about the location." }
+              }
+            }
+          },
+
+          "sub_areas": {
+            "type": "array",
+            "description": "Lightweight sub-zones within this location.",
+            "items": {
+              "type": "object",
+              "required": ["id"],
+              "properties": {
+                "id":        { "type": "string" },
+                "overrides": { "type": "object", "description": "Properties that differ from the parent location.", "additionalProperties": true }
+              }
+            }
+          },
+
+          "hidden": {
+            "type": "array",
+            "description": "Exploration hooks — hints that something can be discovered here.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "hint_type": { "type": "string", "description": "Nature of the hint (visual, auditory, olfactory, tactile, intuitive)." },
+                "subtlety":  { "type": "string", "enum": ["obvious", "noticeable", "subtle", "very_subtle"] }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "characters": {
+      "type": "array",
+      "description": "All NPCs including allies, neutrals, and hostiles.",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "motivation", "truthfulness"],
+        "properties": {
+          "id":          { "type": "string" },
+          "description": { "type": "string" },
+
+          "knowledge":       { "type": "string", "description": "What this character knows." },
+          "awareness_scope": { "type": "string", "description": "Boundaries of their awareness (e.g. only local events, occult knowledge)." },
+
+          "info_control": {
+            "type": "array",
+            "description": "Which clues this character can provide and under what conditions.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "clue_id":   { "type": "string" },
+                "condition":  { "type": "string", "description": "What must happen for the character to share this clue." }
+              }
+            }
+          },
+
+          "motivation":        { "type": "string", "description": "Core drive of this character." },
+          "agenda":            { "type": "string", "description": "Behavioral tendency and action patterns." },
+          "truthfulness":      { "type": "string", "enum": ["honest", "mostly_honest", "selective", "deceptive", "compulsive_liar"] },
+          "pressure_response": { "type": "string", "description": "How the character reacts under pressure (threats, persuasion, intimidation)." },
+
+          "disclosure": {
+            "type": "object",
+            "description": "Conversational openness model.",
+            "properties": {
+              "baseline_openness":  { "type": "string", "enum": ["closed", "guarded", "neutral", "open", "eager"] },
+              "guardedness":        { "type": "string", "description": "What topics or areas trigger defensive behavior." },
+              "trust_sensitivity":  { "type": "string", "enum": ["rigid", "slow", "moderate", "responsive"], "description": "How quickly trust changes based on player actions." }
+            }
+          },
+
+          "taboo_topics":         { "type": "string", "description": "Subjects the character refuses to discuss or reacts strongly to." },
+          "communication_style":  { "type": "string", "description": "Speech patterns and mannerisms." },
+          "relationships":        { "type": "string", "description": "Notable relationships with other characters." }
+        }
+      }
+    },
+
+    "clues": {
+      "type": "array",
+      "description": "All discoverable information fragments. Source/access route is defined in information_structure.links, not here.",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "info_layers"],
+        "properties": {
+          "id":          { "type": "string" },
+          "description": { "type": "string", "description": "What the clue is (factual description)." },
+
+          "discoverability":  { "type": "string", "description": "How easy it is to find — left to GM interpretation based on context." },
+          "interpretability": {
+            "type": "object",
+            "properties": {
+              "primary":     { "type": "string", "description": "Most likely interpretation." },
+              "alternative": { "type": "string", "description": "Other possible readings." }
+            }
+          },
+
+          "importance":   { "type": "string", "enum": ["critical", "major", "minor", "flavor"], "description": "Narrative weight." },
+          "misleading":   { "type": "string", "description": "If and how this clue can lead to wrong conclusions." },
+          "reliability":  { "type": "string", "description": "How trustworthy the information is." },
+
+          "info_layers": {
+            "type": "object",
+            "description": "Three-tier information disclosure model.",
+            "required": ["observed", "possible_meanings", "truth"],
+            "properties": {
+              "observed":          { "type": "string", "description": "Surface-level observable facts." },
+              "possible_meanings": { "type": "string", "description": "What an investigator might infer or speculate." },
+              "truth":             { "type": "string", "description": "The actual significance — disclosed only when conditions are met." }
+            }
+          }
+        }
+      }
+    },
+
+    "events": {
+      "type": "array",
+      "description": "Scripted occurrences triggered by conditions.",
+      "items": {
+        "type": "object",
+        "required": ["id", "triggers", "effects"],
+        "properties": {
+          "id": { "type": "string" },
+          "triggers": {
+            "type": "object",
+            "description": "What causes this event to fire.",
+            "properties": {
+              "player_action":  { "type": "string" },
+              "location_entry": { "type": "string" },
+              "time_elapsed":   { "type": "string" },
+              "clue_discovered": { "type": "string" },
+              "npc_interaction": { "type": "string" }
+            },
+            "additionalProperties": true
+          },
+          "conditions": { "type": "string", "description": "Additional prerequisites beyond the trigger." },
+          "effects":    { "type": "string", "description": "What happens when the event fires." }
+        }
+      }
+    },
+
+    "information_structure": {
+      "type": "object",
+      "description": "Graph of relationships between entities, clue access routes, and narrative flow.",
+      "required": ["links", "essential_clues"],
+      "properties": {
+
+        "links": {
+          "type": "array",
+          "description": "Maps which clues are accessible through which entities and by what method.",
+          "items": {
+            "type": "object",
+            "required": ["clue_id", "entity_type", "entity_id"],
+            "properties": {
+              "clue_id":     { "type": "string" },
+              "entity_type": { "type": "string", "enum": ["location", "character", "event"] },
+              "entity_id":   { "type": "string" },
+              "method":      { "type": "string", "description": "How the clue is obtained (document, testimony, observation, etc.)." }
+            }
+          }
+        },
+
+        "essential_clues": {
+          "type": "array",
+          "description": "Clue IDs that are necessary for reaching the scenario goal. Missing these may make the scenario unsolvable.",
+          "items": { "type": "string" }
+        },
+
+        "dependencies": {
+          "type": "array",
+          "description": "Prerequisite relationships between clues.",
+          "items": {
+            "type": "object",
+            "required": ["required", "unlocks"],
+            "properties": {
+              "required": { "type": "string", "description": "Clue ID that must be obtained first." },
+              "unlocks":  { "type": "string", "description": "Clue ID that becomes accessible." }
+            }
+          }
+        },
+
+        "reveal_flow": {
+          "type": "array",
+          "description": "Recommended clue discovery chains with convergence points. Guides pacing — not mandatory paths.",
+          "items": {
+            "type": "object",
+            "required": ["chain", "convergence"],
+            "properties": {
+              "chain": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Ordered list of clue IDs forming a recommended discovery sequence."
+              },
+              "convergence": {
+                "type": "string",
+                "description": "The narrative insight that emerges when chain clues are connected."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

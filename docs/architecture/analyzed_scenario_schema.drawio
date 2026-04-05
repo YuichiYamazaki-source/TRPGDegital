@@ -1,0 +1,270 @@
+<mxfile host="Electron" agent="Claude Code" version="29.6.6">
+  <diagram name="Analyzed Scenario Schema v2" id="schema-v2">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1600" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ==================== TITLE ==================== -->
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=16;" value="&lt;b&gt;Analyzed Scenario Schema v2&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px;font-weight:normal&quot;&gt;TRPG Engine: Scenario (Master Data) / State (Transaction) / Runtime Cache&lt;/font&gt;" vertex="1">
+          <mxGeometry x="750" y="10" width="500" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== 3-TIER OVERVIEW ==================== -->
+        <mxCell id="tier_scenario" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;fontSize=13;fontStyle=1;" value="Scenario&lt;br&gt;&lt;font style=&quot;font-size:10px;font-weight:normal&quot;&gt;Master Data (immutable)&lt;/font&gt;" vertex="1">
+          <mxGeometry x="420" y="70" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="tier_state" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;fontSize=13;fontStyle=1;" value="State&lt;br&gt;&lt;font style=&quot;font-size:10px;font-weight:normal&quot;&gt;Transaction Data (mutable)&lt;/font&gt;" vertex="1">
+          <mxGeometry x="900" y="70" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="tier_cache" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#000000;fontSize=13;fontStyle=1;" value="Runtime Cache&lt;br&gt;&lt;font style=&quot;font-size:10px;font-weight:normal&quot;&gt;Computed per turn&lt;/font&gt;" vertex="1">
+          <mxGeometry x="1380" y="70" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tier_s2st" edge="1" parent="1" source="tier_scenario" target="tier_state" style="rounded=1;strokeColor=#999999;strokeWidth=1;dashed=1;endArrow=open;endFill=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tier_st2c" edge="1" parent="1" source="tier_state" target="tier_cache" style="rounded=1;strokeColor=#999999;strokeWidth=1;dashed=1;endArrow=open;endFill=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== METADATA ==================== -->
+        <mxCell id="metadata" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;fontSize=12;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" value="&lt;b&gt;Metadata&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;font-weight:normal&quot;&gt;title: string&lt;br&gt;summary: string&lt;br&gt;setting: string&lt;br&gt;pacing: slow | normal | fast&lt;br&gt;secrecy_level: low | medium | high&lt;br&gt;tone: string&lt;br&gt;chaos_tolerance: low | medium | high&lt;br&gt;victory_condition: string (directional)&lt;br&gt;defeat_conditions: string[] (directional)&lt;/font&gt;" vertex="1">
+          <mxGeometry x="680" y="150" width="300" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LOCATIONS ==================== -->
+        <mxCell id="locations" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=12;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" value="&lt;b&gt;Locations[]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;font-weight:normal&quot;&gt;id: string&lt;br&gt;description: string&lt;/font&gt;" vertex="1">
+          <mxGeometry x="30" y="420" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="loc_access" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;access&lt;/b&gt;&lt;br&gt;access_paths[]:&lt;br&gt;  conditions: {}&lt;br&gt;  method_type?: string&lt;br&gt;  risk_modifier?: string" vertex="1">
+          <mxGeometry x="30" y="520" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="loc_perception" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;perception&lt;/b&gt;&lt;br&gt;visibility_level: enum&lt;br&gt;obscurity_factors?: string" vertex="1">
+          <mxGeometry x="30" y="640" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="loc_search" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;search&lt;/b&gt;&lt;br&gt;depth_profile: string&lt;br&gt;notes?: string" vertex="1">
+          <mxGeometry x="30" y="720" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="loc_risk" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;risk[]?&lt;/b&gt;&lt;br&gt;type: detection|physical|social|escalation&lt;br&gt;level: none ~ extreme" vertex="1">
+          <mxGeometry x="30" y="800" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="loc_responses" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;responses[]&lt;/b&gt;&lt;br&gt;trigger / conditions? / effects" vertex="1">
+          <mxGeometry x="30" y="880" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="loc_connections" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;connections[]&lt;/b&gt;&lt;br&gt;target_location_id&lt;br&gt;conditions? / traversal_type?" vertex="1">
+          <mxGeometry x="30" y="950" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="loc_variations" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;variations[]&lt;/b&gt;&lt;br&gt;when / changes" vertex="1">
+          <mxGeometry x="30" y="1030" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="loc_subareas" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;sub_areas[]&lt;/b&gt;&lt;br&gt;id / overrides?" vertex="1">
+          <mxGeometry x="30" y="1100" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="loc_hidden" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;hidden[]&lt;/b&gt;&lt;br&gt;hint_type / subtlety" vertex="1">
+          <mxGeometry x="30" y="1170" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Location composition edges -->
+        <mxCell id="e_loc_access" edge="1" parent="1" source="locations" target="loc_access" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=diamond;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" />
+        <mxCell id="e_loc_percep" edge="1" parent="1" source="loc_access" target="loc_perception" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" />
+        <mxCell id="e_loc_search" edge="1" parent="1" source="loc_perception" target="loc_search" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" />
+        <mxCell id="e_loc_risk" edge="1" parent="1" source="loc_search" target="loc_risk" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" />
+        <mxCell id="e_loc_resp" edge="1" parent="1" source="loc_risk" target="loc_responses" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" />
+        <mxCell id="e_loc_conn" edge="1" parent="1" source="loc_responses" target="loc_connections" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" />
+        <mxCell id="e_loc_var" edge="1" parent="1" source="loc_connections" target="loc_variations" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" />
+        <mxCell id="e_loc_sub" edge="1" parent="1" source="loc_variations" target="loc_subareas" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" />
+        <mxCell id="e_loc_hid" edge="1" parent="1" source="loc_subareas" target="loc_hidden" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" />
+
+        <!-- ==================== CHARACTERS ==================== -->
+        <mxCell id="characters" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=12;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" value="&lt;b&gt;Characters[]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;font-weight:normal&quot;&gt;id: string&lt;br&gt;description: string&lt;br&gt;knowledge: string&lt;br&gt;awareness_scope?: string&lt;br&gt;motivation: string&lt;br&gt;agenda?: string&lt;br&gt;truthfulness: enum&lt;br&gt;pressure_response: string&lt;br&gt;taboo_topics?: string&lt;br&gt;communication_style?: string&lt;br&gt;relationships?: string&lt;/font&gt;" vertex="1">
+          <mxGeometry x="310" y="420" width="250" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="char_info_control" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;info_control[]&lt;/b&gt;&lt;br&gt;clue_id: string&lt;br&gt;condition: string" vertex="1">
+          <mxGeometry x="310" y="680" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="char_disclosure" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#82b366;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;disclosure&lt;/b&gt;&lt;br&gt;baseline_openness: enum&lt;br&gt;guardedness: string&lt;br&gt;trust_sensitivity: enum" vertex="1">
+          <mxGeometry x="310" y="760" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_char_info" edge="1" parent="1" source="characters" target="char_info_control" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=diamond;endFill=1;" />
+        <mxCell id="e_char_disc" edge="1" parent="1" source="char_info_control" target="char_disclosure" style="rounded=1;strokeColor=#82b366;strokeWidth=1;dashed=1;endArrow=none;" />
+
+        <!-- ==================== CLUES ==================== -->
+        <mxCell id="clues" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=12;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" value="&lt;b&gt;Clues[]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;font-weight:normal&quot;&gt;id: string&lt;br&gt;description: string&lt;br&gt;discoverability: string (GM interprets)&lt;br&gt;importance: critical|major|minor|flavor&lt;br&gt;misleading?: string&lt;br&gt;reliability?: string&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;font-weight:normal;color:#888&quot;&gt;(source is in information_structure.links)&lt;/font&gt;" vertex="1">
+          <mxGeometry x="630" y="420" width="290" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="clue_interpret" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#d6b656;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;interpretability&lt;/b&gt;&lt;br&gt;primary: string&lt;br&gt;alternative?: string" vertex="1">
+          <mxGeometry x="630" y="620" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="clue_layers" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;" value="&lt;b&gt;info_layers&lt;/b&gt; (3-tier disclosure)&lt;br&gt;&lt;font color=&quot;#4472C4&quot;&gt;observed&lt;/font&gt;: surface facts&lt;br&gt;&lt;font color=&quot;#ED7D31&quot;&gt;possible_meanings&lt;/font&gt;: inferences&lt;br&gt;&lt;font color=&quot;#C00000&quot;&gt;truth&lt;/font&gt;: actual significance" vertex="1">
+          <mxGeometry x="630" y="700" width="230" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_clue_int" edge="1" parent="1" source="clues" target="clue_interpret" style="rounded=1;strokeColor=#d6b656;strokeWidth=1;dashed=1;endArrow=diamond;endFill=1;" />
+        <mxCell id="e_clue_layers" edge="1" parent="1" source="clue_interpret" target="clue_layers" style="rounded=1;strokeColor=#d6b656;strokeWidth=1;dashed=1;endArrow=none;" />
+
+        <!-- ==================== EVENTS ==================== -->
+        <mxCell id="events" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=12;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" value="&lt;b&gt;Events[]&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;font-weight:normal&quot;&gt;id: string&lt;br&gt;conditions?: string&lt;br&gt;effects: string&lt;/font&gt;" vertex="1">
+          <mxGeometry x="990" y="420" width="200" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="event_triggers" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#d6b656;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;triggers&lt;/b&gt;&lt;br&gt;player_action?: string&lt;br&gt;location_entry?: string&lt;br&gt;time_elapsed?: string&lt;br&gt;clue_discovered?: string&lt;br&gt;npc_interaction?: string" vertex="1">
+          <mxGeometry x="990" y="540" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_event_trig" edge="1" parent="1" source="events" target="event_triggers" style="rounded=1;strokeColor=#d6b656;strokeWidth=1;dashed=1;endArrow=diamond;endFill=1;" />
+
+        <!-- ==================== INFORMATION STRUCTURE ==================== -->
+        <mxCell id="info_struct" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6D0DE;strokeColor=#B5739D;fontColor=#000000;fontSize=12;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontStyle=1;" value="Information Structure" vertex="1">
+          <mxGeometry x="1260" y="420" width="340" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="info_links" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#B5739D;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;links[]&lt;/b&gt; — Clue access routes&lt;br&gt;clue_id: string&lt;br&gt;entity_type: location|character|event&lt;br&gt;entity_id: string&lt;br&gt;method: document|testimony|observation|..." vertex="1">
+          <mxGeometry x="1260" y="470" width="340" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="info_essential" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#B5739D;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;essential_clues[]&lt;/b&gt;&lt;br&gt;Clue IDs required for goal (missing = deadlock)" vertex="1">
+          <mxGeometry x="1260" y="580" width="340" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="info_deps" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#B5739D;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;dashed=1;" value="&lt;b&gt;dependencies[]&lt;/b&gt;&lt;br&gt;required: clue_id → unlocks: clue_id" vertex="1">
+          <mxGeometry x="1260" y="650" width="340" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="info_reveal" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6D0DE;strokeColor=#B5739D;fontColor=#000000;fontSize=10;verticalAlign=top;align=left;spacingLeft=6;spacingTop=2;" value="&lt;b&gt;reveal_flow[]&lt;/b&gt; — Recommended chains&lt;br&gt;chain: clue_id[] (ordered discovery path)&lt;br&gt;convergence: string (narrative insight)" vertex="1">
+          <mxGeometry x="1260" y="720" width="340" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_is_links" edge="1" parent="1" source="info_struct" target="info_links" style="rounded=1;strokeColor=#B5739D;strokeWidth=1;dashed=1;endArrow=diamond;endFill=1;" />
+        <mxCell id="e_is_ess" edge="1" parent="1" source="info_links" target="info_essential" style="rounded=1;strokeColor=#B5739D;strokeWidth=1;dashed=1;endArrow=none;" />
+        <mxCell id="e_is_deps" edge="1" parent="1" source="info_essential" target="info_deps" style="rounded=1;strokeColor=#B5739D;strokeWidth=1;dashed=1;endArrow=none;" />
+        <mxCell id="e_is_reveal" edge="1" parent="1" source="info_deps" target="info_reveal" style="rounded=1;strokeColor=#B5739D;strokeWidth=1;dashed=1;endArrow=none;" />
+
+        <!-- ==================== METADATA → ENTITIES ==================== -->
+        <mxCell id="e_meta_loc" edge="1" parent="1" source="metadata" target="locations" style="rounded=1;strokeColor=#333333;strokeWidth=2;endArrow=open;endFill=0;" />
+        <mxCell id="e_meta_char" edge="1" parent="1" source="metadata" target="characters" style="rounded=1;strokeColor=#333333;strokeWidth=2;endArrow=open;endFill=0;" />
+        <mxCell id="e_meta_clue" edge="1" parent="1" source="metadata" target="clues" style="rounded=1;strokeColor=#333333;strokeWidth=2;endArrow=open;endFill=0;" />
+        <mxCell id="e_meta_event" edge="1" parent="1" source="metadata" target="events" style="rounded=1;strokeColor=#333333;strokeWidth=2;endArrow=open;endFill=0;" />
+        <mxCell id="e_meta_is" edge="1" parent="1" source="metadata" target="info_struct" style="rounded=1;strokeColor=#333333;strokeWidth=2;endArrow=open;endFill=0;" />
+
+        <!-- ==================== CROSS-REFERENCES (links concept) ==================== -->
+        <mxCell id="e_links_loc" edge="1" parent="1" source="info_links" target="locations" style="rounded=1;strokeColor=#B5739D;strokeWidth=1;dashed=1;endArrow=open;endFill=0;curved=1;" value="&lt;font style=&quot;font-size:9px&quot;&gt;refs&lt;/font&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_links_char" edge="1" parent="1" source="info_links" target="characters" style="rounded=1;strokeColor=#B5739D;strokeWidth=1;dashed=1;endArrow=open;endFill=0;curved=1;" value="&lt;font style=&quot;font-size:9px&quot;&gt;refs&lt;/font&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_links_clue" edge="1" parent="1" source="info_links" target="clues" style="rounded=1;strokeColor=#B5739D;strokeWidth=1;dashed=1;endArrow=open;endFill=0;curved=1;" value="&lt;font style=&quot;font-size:9px&quot;&gt;refs&lt;/font&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_links_event" edge="1" parent="1" source="info_links" target="events" style="rounded=1;strokeColor=#B5739D;strokeWidth=1;dashed=1;endArrow=open;endFill=0;curved=1;" value="&lt;font style=&quot;font-size:9px&quot;&gt;refs&lt;/font&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== STATE (Transaction Data) ==================== -->
+        <mxCell id="state_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" value="&lt;b&gt;State (Transaction Data)&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;font-weight:normal&quot;&gt;&lt;b&gt;Player Knowledge&lt;/b&gt;&lt;br&gt;  known_clues / interpreted_clues&lt;br&gt;  misinterpreted_clues?&lt;br&gt;&lt;br&gt;&lt;b&gt;Character States&lt;/b&gt;&lt;br&gt;  trust / suspicion / attitude / status&lt;br&gt;&lt;br&gt;&lt;b&gt;Location States&lt;/b&gt;&lt;br&gt;  explored / locked / alert_level / altered&lt;br&gt;&lt;br&gt;&lt;b&gt;Event States&lt;/b&gt;&lt;br&gt;  triggered / active / completed&lt;br&gt;&lt;br&gt;&lt;b&gt;World State&lt;/b&gt;&lt;br&gt;  time / phase / global_alert&lt;/font&gt;" vertex="1">
+          <mxGeometry x="1680" y="420" width="280" height="280" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== RUNTIME CACHE ==================== -->
+        <mxCell id="cache_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#000000;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" value="&lt;b&gt;Runtime Cache (Computed)&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;font-weight:normal&quot;&gt;effective_openness&lt;br&gt;effective_risk&lt;br&gt;effective_visibility&lt;br&gt;current_accessibility&lt;br&gt;&lt;br&gt;&lt;i&gt;Derived from Scenario + State&lt;br&gt;per turn. GM uses these for&lt;br&gt;adjudication.&lt;/i&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry x="1680" y="740" width="280" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_state_cache" edge="1" parent="1" source="state_box" target="cache_box" style="rounded=1;strokeColor=#666666;strokeWidth=2;endArrow=open;endFill=0;" value="&lt;font style=&quot;font-size:9px&quot;&gt;compute&lt;/font&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_scenario_cache" edge="1" parent="1" source="info_reveal" target="cache_box" style="rounded=1;strokeColor=#666666;strokeWidth=1;dashed=1;endArrow=open;endFill=0;curved=1;" value="&lt;font style=&quot;font-size:9px&quot;&gt;+ scenario data&lt;/font&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== GAME LOOP (bottom) ==================== -->
+        <mxCell id="loop_title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=12;fontStyle=1;" value="Game Loop" vertex="1">
+          <mxGeometry x="680" y="870" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="loop1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;fontSize=10;" value="Scenario&lt;br&gt;(define)" vertex="1">
+          <mxGeometry x="410" y="910" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="loop2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;fontSize=10;" value="State Init" vertex="1">
+          <mxGeometry x="530" y="910" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="loop3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=10;" value="Player&lt;br&gt;Action" vertex="1">
+          <mxGeometry x="650" y="910" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="loop4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=10;" value="Event&lt;br&gt;Check" vertex="1">
+          <mxGeometry x="770" y="910" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="loop5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;fontSize=10;" value="State&lt;br&gt;Update" vertex="1">
+          <mxGeometry x="890" y="910" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="loop6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#000000;fontSize=10;" value="Cache&lt;br&gt;Regen" vertex="1">
+          <mxGeometry x="1010" y="910" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="loop7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#000000;fontSize=10;" value="LLM&lt;br&gt;Judgment" vertex="1">
+          <mxGeometry x="1130" y="910" width="80" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="el12" edge="1" parent="1" source="loop1" target="loop2" style="strokeColor=#333;endArrow=block;endFill=1;" />
+        <mxCell id="el23" edge="1" parent="1" source="loop2" target="loop3" style="strokeColor=#333;endArrow=block;endFill=1;" />
+        <mxCell id="el34" edge="1" parent="1" source="loop3" target="loop4" style="strokeColor=#333;endArrow=block;endFill=1;" />
+        <mxCell id="el45" edge="1" parent="1" source="loop4" target="loop5" style="strokeColor=#333;endArrow=block;endFill=1;" />
+        <mxCell id="el56" edge="1" parent="1" source="loop5" target="loop6" style="strokeColor=#333;endArrow=block;endFill=1;" />
+        <mxCell id="el67" edge="1" parent="1" source="loop6" target="loop7" style="strokeColor=#333;endArrow=block;endFill=1;" />
+        <!-- Loop back arrow -->
+        <mxCell id="el_back" edge="1" parent="1" source="loop7" target="loop3" style="strokeColor=#333;endArrow=block;endFill=1;curved=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1170" y="890" />
+              <mxPoint x="690" y="890" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ==================== LEGEND ==================== -->
+        <mxCell id="legend_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontColor=#000000;" value="" vertex="1">
+          <mxGeometry x="30" y="150" width="240" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=12;fontStyle=1;" value="Legend" vertex="1">
+          <mxGeometry x="40" y="155" width="60" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="" vertex="1">
+          <mxGeometry x="45" y="185" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1t" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=10;" value="Metadata / Scenario root" vertex="1">
+          <mxGeometry x="70" y="182" width="140" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="" vertex="1">
+          <mxGeometry x="45" y="210" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2t" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=10;" value="Entity (Location / Character)" vertex="1">
+          <mxGeometry x="70" y="207" width="170" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="" vertex="1">
+          <mxGeometry x="45" y="235" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3t" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=10;" value="Mechanic (Clue / Event)" vertex="1">
+          <mxGeometry x="70" y="232" width="150" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6D0DE;strokeColor=#B5739D;" value="" vertex="1">
+          <mxGeometry x="45" y="260" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4t" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=10;" value="Information Structure" vertex="1">
+          <mxGeometry x="70" y="257" width="130" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="" vertex="1">
+          <mxGeometry x="45" y="285" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5t" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=10;" value="State (runtime mutable)" vertex="1">
+          <mxGeometry x="70" y="282" width="140" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="lg6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="" vertex="1">
+          <mxGeometry x="45" y="310" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lg6t" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;fontSize=10;" value="Cache / Sub-object" vertex="1">
+          <mxGeometry x="70" y="307" width="130" height="22" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,106 @@
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#dae8fc', 'secondaryColor': '#d5e8d4', 'tertiaryColor': '#fff2cc'}}}%%
+
+graph TD
+    subgraph OVERVIEW["TRPG Engine — 3-Tier Architecture"]
+        direction LR
+        TIER_S["🔵 Scenario<br/><i>Master Data (immutable)</i>"]
+        TIER_ST["🟣 State<br/><i>Transaction Data (mutable)</i>"]
+        TIER_C["⚪ Runtime Cache<br/><i>Computed per turn</i>"]
+        TIER_S -->|initialize| TIER_ST -->|compute| TIER_C
+    end
+
+    subgraph SCENARIO["Scenario (Master Data)"]
+        META["<b>Metadata</b><br/>title / summary / setting<br/>pacing: slow|normal|fast<br/>secrecy_level: low|medium|high<br/>tone: string<br/>chaos_tolerance: low|medium|high<br/>victory_condition: string (directional)<br/>defeat_conditions: string[] (directional)"]
+
+        subgraph ENTITIES["Entities"]
+            direction TB
+
+            LOC["<b>Locations[]</b><br/>id / description"]
+            CHAR["<b>Characters[]</b><br/>id / description<br/>knowledge / awareness_scope?<br/>motivation / agenda?<br/>truthfulness: enum<br/>pressure_response: string<br/>taboo_topics? / communication_style?<br/>relationships?"]
+            CLUE["<b>Clues[]</b><br/>id / description<br/>discoverability: string (GM interprets)<br/>importance: critical|major|minor|flavor<br/>misleading? / reliability?<br/><i>(source is in links)</i>"]
+            EVT["<b>Events[]</b><br/>id / conditions? / effects"]
+        end
+
+        subgraph LOC_SUB["Location Sub-objects"]
+            direction TB
+            L_ACC["access<br/>access_paths[]: conditions, method_type?, risk_modifier?"]
+            L_PER["perception<br/>visibility_level: enum / obscurity_factors?"]
+            L_SEA["search<br/>depth_profile / notes?"]
+            L_RSK["risk[]?<br/>type: detection|physical|social|escalation<br/>level: none ~ extreme"]
+            L_RES["responses[]<br/>trigger / conditions? / effects"]
+            L_CON["connections[]<br/>target_location_id / conditions? / traversal_type?"]
+            L_VAR["variations[]<br/>when / changes"]
+            L_SUB["sub_areas[]<br/>id / overrides?"]
+            L_HID["hidden[]<br/>hint_type / subtlety"]
+        end
+
+        subgraph CHAR_SUB["Character Sub-objects"]
+            direction TB
+            C_INF["info_control[]<br/>clue_id / condition"]
+            C_DIS["disclosure<br/>baseline_openness: enum<br/>guardedness: string<br/>trust_sensitivity: enum"]
+        end
+
+        subgraph CLUE_SUB["Clue Sub-objects"]
+            direction TB
+            CL_INT["interpretability<br/>primary / alternative?"]
+            CL_LAY["info_layers (3-tier disclosure)<br/>🔵 observed: surface facts<br/>🟠 possible_meanings: inferences<br/>🔴 truth: actual significance"]
+        end
+
+        subgraph EVT_SUB["Event Sub-objects"]
+            E_TRG["triggers<br/>player_action? / location_entry?<br/>time_elapsed? / clue_discovered?<br/>npc_interaction?"]
+        end
+
+        subgraph INFO["Information Structure"]
+            direction TB
+            I_LNK["<b>links[]</b> — Clue access routes<br/>clue_id / entity_type: location|character|event<br/>entity_id / method: document|testimony|observation|..."]
+            I_ESS["<b>essential_clues[]</b><br/>Clue IDs required for goal (missing = deadlock)"]
+            I_DEP["<b>dependencies[]</b><br/>required: clue_id → unlocks: clue_id"]
+            I_REV["<b>reveal_flow[]</b> — Recommended chains<br/>chain: clue_id[] (ordered discovery path)<br/>convergence: string (narrative insight)"]
+        end
+    end
+
+    subgraph STATE["State (Transaction Data)"]
+        direction TB
+        S_PK["<b>Player Knowledge</b><br/>known_clues / interpreted_clues<br/>misinterpreted_clues?"]
+        S_CS["<b>Character States</b><br/>trust / suspicion / attitude / status"]
+        S_LS["<b>Location States</b><br/>explored / locked / alert_level / altered"]
+        S_ES["<b>Event States</b><br/>triggered / active / completed"]
+        S_WS["<b>World State</b><br/>time / phase / global_alert"]
+    end
+
+    subgraph CACHE["Runtime Cache (Computed)"]
+        direction TB
+        RC["effective_openness<br/>effective_risk<br/>effective_visibility<br/>current_accessibility<br/><br/><i>Derived from Scenario + State<br/>GM uses these for adjudication</i>"]
+    end
+
+    %% Metadata → Entities
+    META --> LOC
+    META --> CHAR
+    META --> CLUE
+    META --> EVT
+    META --> INFO
+
+    %% Entity → Sub-objects
+    LOC --> L_ACC
+    L_ACC --- L_PER --- L_SEA --- L_RSK --- L_RES --- L_CON --- L_VAR --- L_SUB --- L_HID
+    CHAR --> C_INF --- C_DIS
+    CLUE --> CL_INT --- CL_LAY
+    EVT --> E_TRG
+
+    %% Information Structure internal
+    I_LNK --- I_ESS --- I_DEP --- I_REV
+
+    %% Cross-references from links
+    I_LNK -.->|refs| LOC
+    I_LNK -.->|refs| CHAR
+    I_LNK -.->|refs| CLUE
+    I_LNK -.->|refs| EVT
+
+    %% State + Scenario → Cache
+    STATE -->|+ scenario data| CACHE
+
+    subgraph LOOP["Game Loop"]
+        direction LR
+        G1["Scenario<br/>Define"] --> G2["State<br/>Init"] --> G3["Player<br/>Action"] --> G4["Event<br/>Check"] --> G5["State<br/>Update"] --> G6["Cache<br/>Regen"] --> G7["LLM<br/>Judgment"]
+        G7 -->|loop| G3
+    end
