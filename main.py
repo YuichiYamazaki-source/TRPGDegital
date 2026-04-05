@@ -19,10 +19,9 @@ gm_engine = GMEngine()
 
 # ===== ディレクトリ =====
 
-DATA_DIR = Path("data")
-CHARACTERS_DIR = DATA_DIR / "characters"
-SCENARIOS_DIR = DATA_DIR / "scenarios"
-CHAR_BUILD_DIR = DATA_DIR / "character_builds"
+CHARACTERS_DIR = "characters"
+SCENARIOS_DIR = "scenarios"
+CHAR_BUILD_DIR = "character_builds"
 
 CHARACTERS_DIR.mkdir(parents=True, exist_ok=True)
 SCENARIOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -53,12 +52,12 @@ CHARACTERS = load_characters()
 
 # ===== キャラビルド用 =====
 
-def get_build_path(user_id: str) -> Path:
-    return CHAR_BUILD_DIR / f"{user_id}.json"
+def get_build_path(build_id: str) -> Path:
+    return CHAR_BUILD_DIR / f"{build_id}.json"
 
 
-def save_build(user_id: str, data: dict):
-    get_build_path(user_id).write_text(
+def save_build(build_id: str, data: dict):
+   get_build_path(build_id).write_text(
         json.dumps(data, ensure_ascii=False, indent=2),
         encoding="utf-8"
     )
@@ -71,12 +70,13 @@ def load_build(user_id: str) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def create_empty_character():
+def create_empty_character(owner: str):
     return {
+        "id": str(uuid.uuid4()),
+        "owner": owner,
         "step": 1,
-        "remaining": 0,
+       "remaining": 0,
         "character": {
-            "id": "",
             "meta": {},
             "attributes": {},
             "derived": {},
@@ -201,14 +201,14 @@ def end_session(session_id: str):
 
 @app.post("/character/start")
 def start_character(user_id: str):
-    data = create_empty_character()
-    save_build(user_id, data)
+    data = create_empty_character(user_id)
+    save_build(data["id"], data)
     return data
 
 
 @app.post("/character/roll")
-def roll_character(user_id: str):
-    data = load_build(user_id)
+def roll_character(build_id: str):
+    data = load_build(build_id)
 
     attrs = roll_attributes()
     data["character"]["attributes"] = attrs
@@ -220,13 +220,13 @@ def roll_character(user_id: str):
     }
 
     data["step"] = 2
-    save_build(user_id, data)
+    save_build(build_id, data)
     return data
 
 
 @app.post("/character/job")
-def select_job(user_id: str, job_name: str):
-    data = load_build(user_id)
+def select_job(build_id: str, job_name: str):
+    data = load_build(build_id)
 
     if job_name not in OCCUPATIONS:
         raise HTTPException(status_code=400, detail="Invalid job")
@@ -240,13 +240,13 @@ def select_job(user_id: str, job_name: str):
     data["character"]["meta"]["occupation"] = job_name
     data["step"] = 3
 
-    save_build(user_id, data)
+    save_build(build_id, data)
     return data
 
 
 @app.post("/character/skill")
-def add_skill(user_id: str, skill_name: str, value: int):
-    data = load_build(user_id)
+def add_skill(build_id: str, skill_name: str, value: int):
+    data = load_build(build_id)
 
     if value > data["remaining"]:
         return {
@@ -259,23 +259,24 @@ def add_skill(user_id: str, skill_name: str, value: int):
 
     data["remaining"] -= value
 
-    save_build(user_id, data)
+    save_build(build_id, data)
     return data
 
 
 @app.post("/character/buy")
-def buy_item(user_id: str, item: str):
-    data = load_build(user_id)
+def buy_item(build_id: str, item: str):
+    data = load_build(build_id)
 
     data["character"]["inventory"].append(item)
 
-    save_build(user_id, data)
+    save_build(build_id, data)
     return data
 
 
 @app.post("/character/meta")
-def finalize_character(user_id: str, name: str):
-    data = load_build(user_id)
+def finalize_character(build_id: str, name: str):
+    data = load_build(build_id)
+
     char = data["character"]
 
     char_id = str(uuid.uuid4())
@@ -285,7 +286,7 @@ def finalize_character(user_id: str, name: str):
     out_path = CHARACTERS_DIR / f"{char_id}.json"
     out_path.write_text(json.dumps(char, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    get_build_path(user_id).unlink(missing_ok=True)
+    get_build_path(build_id).unlink(missing_ok=True)
 
     CHARACTERS[char_id] = char
 
