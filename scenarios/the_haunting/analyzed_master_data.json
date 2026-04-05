@@ -1,0 +1,1226 @@
+{
+  "metadata": {
+    "title": "The Haunting (悪霊の家)",
+    "summary": "Walter Corbitt, an undead sorcerer, haunts a house in Boston. His body lies in the basement, preserved by Cthulhu Mythos sorcery. He attacks residents vampire-like and kills anyone who discovers his secrets. Investigators are hired by landlord Stephen Knott to resolve the house's haunted reputation. They must research Corbitt's history through newspaper archives, libraries, court records, and neighborhood contacts, then confront Corbitt in the basement. Corbitt actively resists — misleading, terrifying, and ultimately trying to kill them.",
+    "setting": "1920s Boston, Massachusetts. A dense urban neighborhood where the Corbitt House sits wedged between two taller office buildings. Research locations include the Boston Globe office, Central Library, Hall of Records, Higher Courts, and the ruined Chapel of Contemplation. The sanitarium at Roxbury houses former tenants.",
+    "pacing": "normal",
+    "secrecy_level": "high",
+    "tone": "Claustrophobic haunted-house horror with investigative noir elements. The dread builds from mundane research into historical evil, culminating in a visceral confrontation with an undead abomination in a dark basement.",
+    "chaos_tolerance": "medium",
+    "victory_condition": "Discover and destroy Walter Corbitt's undead body in the basement, neutralizing the supernatural threat and freeing the house from his influence.",
+    "defeat_conditions": [
+      "Investigators report nothing wrong; Corbitt kills Mr. Knott when he stays overnight, and investigators face police suspicion.",
+      "Investigators are killed or driven permanently insane by Corbitt's attacks before reaching or destroying him.",
+      "Investigators flee the house without resolving the threat, leaving Corbitt to continue haunting indefinitely."
+    ]
+  },
+
+  "locations": [
+    {
+      "id": "loc_intro",
+      "description": "The initial meeting point — could be a detective's office, Mr. Knott's home, or a café. Mr. Knott presents the job, gives the house key, address, and $25 advance.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": {},
+            "method_type": "walk",
+            "risk_modifier": "none"
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "obvious",
+        "obscurity_factors": null
+      },
+      "search": null,
+      "risk": [],
+      "responses": [],
+      "connections": [
+        { "target_location_id": "loc_boston_globe", "conditions": null, "traversal_type": "travel" },
+        { "target_location_id": "loc_central_library", "conditions": null, "traversal_type": "travel" },
+        { "target_location_id": "loc_hall_of_records", "conditions": null, "traversal_type": "travel" },
+        { "target_location_id": "loc_corbitt_house", "conditions": null, "traversal_type": "travel" },
+        { "target_location_id": "loc_neighborhood", "conditions": null, "traversal_type": "travel" }
+      ],
+      "variations": [],
+      "sub_areas": [],
+      "hidden": []
+    },
+    {
+      "id": "loc_boston_globe",
+      "description": "The Boston Globe newspaper office. A daily paper of good repute. The reference room with clipping files is in the basement and not open to the public. The editor Arty Wilmot guards access jealously.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": { "npc_permission": "arty_wilmot", "skill_check": "Charm / Intimidate / Persuade / Fast Talk (Regular)" },
+            "method_type": "persuasion",
+            "risk_modifier": "Pushed failure on Intimidate triggers a fight; Persuade/Charm pushed failure results in security escort."
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "obvious",
+        "obscurity_factors": "The clipping files themselves are well-organized once access is granted."
+      },
+      "search": {
+        "depth_profile": "Surface: the public office area. Deep: the basement clipping files containing unpublished articles. Record keeper Ruth Blake can mention pre-1878 fire gaps without a roll.",
+        "notes": "Each successful access yields Player Handout 2."
+      },
+      "risk": [
+        { "type": "social", "level": "medium" }
+      ],
+      "responses": [
+        {
+          "trigger": "Pushed roll failure on social skills",
+          "conditions": "Investigator persists after initial refusal",
+          "effects": "Intimidate: fight breaks out. Persuade/Charm: Arty calls security. In all cases, investigators are escorted out."
+        }
+      ],
+      "connections": [
+        { "target_location_id": "loc_intro", "conditions": null, "traversal_type": "travel" }
+      ],
+      "variations": [],
+      "sub_areas": [],
+      "hidden": []
+    },
+    {
+      "id": "loc_central_library",
+      "description": "Boston's Central Library. A quiet research environment where investigators can spend half-day blocks searching historical records. Each half-day allows one Library Use roll per investigator.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": {},
+            "method_type": "walk",
+            "risk_modifier": "none"
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "obvious",
+        "obscurity_factors": "Information is buried in archives; requires systematic searching."
+      },
+      "search": {
+        "depth_profile": "Each successful Library Use roll yields one handout in sequence (Handouts 3→4→5→6). Failed rolls can be retried, each costing another half-day. Four layers of depth total.",
+        "notes": "If research takes more than one full day, Mr. Knott contacts investigators to urge progress."
+      },
+      "risk": [],
+      "responses": [],
+      "connections": [
+        { "target_location_id": "loc_intro", "conditions": null, "traversal_type": "travel" }
+      ],
+      "variations": [],
+      "sub_areas": [],
+      "hidden": []
+    },
+    {
+      "id": "loc_hall_of_records",
+      "description": "Boston's Hall of Records, containing civil court records, church registers, and other official documents.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": {},
+            "method_type": "walk",
+            "risk_modifier": "none"
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "obvious",
+        "obscurity_factors": "Bureaucratic organization; investigators need to know what to look for."
+      },
+      "search": {
+        "depth_profile": "Surface: civil court records (Library Use roll yields Handout 7). Deep: checking criminal records for the Chapel reveals a 1912 trial reference but no actual records — serious crimes go to higher courts.",
+        "notes": "A clerk or successful Law roll explains the jurisdictional distinction."
+      },
+      "risk": [],
+      "responses": [],
+      "connections": [
+        { "target_location_id": "loc_intro", "conditions": null, "traversal_type": "travel" },
+        { "target_location_id": "loc_higher_courts", "conditions": "Investigators learn about criminal trial for the Chapel", "traversal_type": "travel" }
+      ],
+      "variations": [],
+      "sub_areas": [],
+      "hidden": []
+    },
+    {
+      "id": "loc_higher_courts",
+      "description": "The Higher Courts and/or Central Police Station. Contains criminal court records and police reports about the 1912 Chapel raid. Access is restricted and requires social maneuvering or legal connections.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": { "skill_check": "Law (success = friendly clerk Kim DeBran)" },
+            "method_type": "legal_contacts",
+            "risk_modifier": "Law failure: DeBran demands bribe then betrays them."
+          },
+          {
+            "conditions": { "skill_check": "Credit Rating 75%+" },
+            "method_type": "social_influence",
+            "risk_modifier": "none"
+          },
+          {
+            "conditions": { "skill_check": "Persuade (must provide convincing reason)" },
+            "method_type": "persuasion",
+            "risk_modifier": "Pushed failure risks criminal consequences."
+          },
+          {
+            "conditions": { "skill_check": "Charm" },
+            "method_type": "persuasion",
+            "risk_modifier": "low"
+          },
+          {
+            "conditions": { "skill_check": "Fast Talk (may need fake ID)" },
+            "method_type": "deception",
+            "risk_modifier": "High risk — fake ID in a courthouse."
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "obvious",
+        "obscurity_factors": "Records exist but are behind institutional gatekeeping."
+      },
+      "search": {
+        "depth_profile": "Once access is granted, the Chapel raid records (Handout 8) are available. The records themselves reveal a cover-up with suspiciously vague coroner reports.",
+        "notes": null
+      },
+      "risk": [
+        { "type": "social", "level": "medium" },
+        { "type": "escalation", "level": "medium" }
+      ],
+      "responses": [
+        {
+          "trigger": "Pushed roll failure",
+          "conditions": null,
+          "effects": "Criminal risk, police hostility, body search. Possible arrest or permanent hostility from law enforcement."
+        }
+      ],
+      "connections": [
+        { "target_location_id": "loc_intro", "conditions": null, "traversal_type": "travel" }
+      ],
+      "variations": [],
+      "sub_areas": [],
+      "hidden": []
+    },
+    {
+      "id": "loc_neighborhood",
+      "description": "The neighborhood surrounding the Corbitt House. Most pre-WWI residents have moved or died. The Corbitt House is the only private residence remaining, with an overgrown front yard. A shopkeeper named Doherty operates nearby.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": {},
+            "method_type": "walk",
+            "risk_modifier": "none"
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "obvious",
+        "obscurity_factors": null
+      },
+      "search": {
+        "depth_profile": "Surface: observe the desolate neighborhood. Interact with Doherty for local rumors about the Macario family and the Chapel location.",
+        "notes": null
+      },
+      "risk": [],
+      "responses": [],
+      "connections": [
+        { "target_location_id": "loc_corbitt_house", "conditions": null, "traversal_type": "walk" },
+        { "target_location_id": "loc_chapel", "conditions": "Doherty or other source points investigators to it", "traversal_type": "walk" }
+      ],
+      "variations": [],
+      "sub_areas": [],
+      "hidden": []
+    },
+    {
+      "id": "loc_roxbury_sanitarium",
+      "description": "Roxbury Sanitarium, 3-5km from Boston. Houses Vittorio and Gabriella Macario, the former tenants driven insane by Corbitt's hauntings.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": { "knowledge": "Doherty or other source mentions Macario family is here" },
+            "method_type": "travel",
+            "risk_modifier": "none"
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "obvious",
+        "obscurity_factors": null
+      },
+      "search": {
+        "depth_profile": "Interviews with patients. Vittorio is clearly insane but may offer a cryptic Bible clue. Gabriella is lucid but becomes agitated — interview should be cut short.",
+        "notes": null
+      },
+      "risk": [],
+      "responses": [
+        {
+          "trigger": "Prolonged interview with Gabriella",
+          "conditions": null,
+          "effects": "She becomes agitated; staff may intervene and end the visit."
+        }
+      ],
+      "connections": [],
+      "variations": [],
+      "sub_areas": [],
+      "hidden": []
+    },
+    {
+      "id": "loc_chapel",
+      "description": "The ruins of the Chapel of Contemplation & Church of Our Lord Granter of Secrets. A weathered, overgrown ruin at the end of a winding, dirty street. Gray rubble that looks more like natural stone than building remnants. A recently painted white symbol on a crumbling wall — three Ys forming a triangle with an eye in the center.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": { "knowledge": "Know Chapel location from Doherty, records, or exploration" },
+            "method_type": "walk",
+            "risk_modifier": "Collapsing floor hazard."
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "noticeable",
+        "obscurity_factors": "Overgrown ruins; easy to miss from a distance but recognizable up close."
+      },
+      "search": {
+        "depth_profile": "Surface: the cult symbol on the wall. Medium: exploring ruins risks floor collapse into the basement. Deep: the basement contains skeletons, a journal, and the Book of Eibon (Spot Hidden required).",
+        "notes": "The recently painted symbol suggests ongoing cult activity — a future adventure hook."
+      },
+      "risk": [
+        { "type": "physical", "level": "medium" }
+      ],
+      "responses": [
+        {
+          "trigger": "Walking on rotted floorboards",
+          "conditions": "Luck roll failure",
+          "effects": "Floor gives way. Jump roll: success = leap to safety; failure = fall 3m into basement for 1D6 damage."
+        }
+      ],
+      "connections": [],
+      "variations": [],
+      "sub_areas": [
+        {
+          "id": "loc_chapel_basement",
+          "overrides": {
+            "description": "An isolated room beneath the chapel ruins. Collapsed stairs, two cultist skeletons in tattered silk robes near a shelf. Reachable only by falling through the rotted floor.",
+            "perception": {
+              "visibility_level": "hidden",
+              "obscurity_factors": "Dark, buried under rubble. Only accessible via floor collapse."
+            },
+            "search": {
+              "depth_profile": "Spot Hidden: find a journal and grimoire (Book of Eibon) on a shelf. Pushed Spot Hidden failure: step on nail or ruin clothing.",
+              "notes": null
+            },
+            "risk": [
+              { "type": "physical", "level": "low" }
+            ]
+          }
+        }
+      ],
+      "hidden": [
+        { "hint_type": "intuitive", "subtlety": "noticeable" },
+        { "hint_type": "visual", "subtlety": "obvious" }
+      ]
+    },
+    {
+      "id": "loc_corbitt_house",
+      "description": "A brick building wedged between two taller, newer office buildings. The front faces the street. The back garden is overgrown with a half-collapsed awning. Unremarkable, almost hidden in its neighbors' shadows. Curtained windows conceal everything inside. Front door has one lock plus 4 recently added deadbolts. Ground-floor windows are nailed shut from inside.",
+      "access": {
+        "access_paths": [
+          {
+            "conditions": { "has_item": "house_key from Mr. Knott" },
+            "method_type": "key",
+            "risk_modifier": "none"
+          },
+          {
+            "conditions": {},
+            "method_type": "break-in",
+            "risk_modifier": "Noise, potential damage, attracting attention. Windows nailed shut, back door has 3 deadbolts and 2 locks."
+          }
+        ]
+      },
+      "perception": {
+        "visibility_level": "noticeable",
+        "obscurity_factors": "Overshadowed by neighboring office buildings. Curtained windows. Interior is dark and cluttered."
+      },
+      "search": {
+        "depth_profile": "Surface: abandoned household items, Catholic religious paraphernalia, rotting food. Medium: Corbitt's diary in a boarded-up cupboard (ground floor storage). Deep: basement contains Corbitt's enchanted knife and his undead body behind hidden walls.",
+        "notes": "Corbitt is aware of all activity in the house and will actively interfere with investigation."
+      },
+      "risk": [
+        { "type": "physical", "level": "high" },
+        { "type": "escalation", "level": "extreme" }
+      ],
+      "responses": [
+        {
+          "trigger": "Investigators enter the house",
+          "conditions": null,
+          "effects": "Corbitt becomes aware and begins observing. May produce strange sounds from the upper floor spare bedroom."
+        },
+        {
+          "trigger": "Investigators explore the upper floor spare bedroom",
+          "conditions": null,
+          "effects": "Corbitt manifests phenomena: heavy thumping, blood pooling on floor/dripping from walls, rattling windows/doors, violent bed movement."
+        },
+        {
+          "trigger": "Investigator approaches the window in the spare bedroom",
+          "conditions": "Corbitt lures them to check the window",
+          "effects": "Bed attack: bed launches at investigator. Spot Hidden to notice, Dodge to avoid. Failure: slammed through window for 1D6+2 damage."
+        },
+        {
+          "trigger": "Investigators find or approach the enchanted knife in the basement",
+          "conditions": null,
+          "effects": "Knife levitates and attacks (see floating knife event)."
+        },
+        {
+          "trigger": "Investigators break through basement walls toward Corbitt's lair",
+          "conditions": null,
+          "effects": "If knife not yet found, it attacks. Rat swarm in Room 3 attacks if not given escape route."
+        }
+      ],
+      "connections": [],
+      "variations": [
+        {
+          "when": "Investigators cut power / Corbitt cuts breaker",
+          "changes": "Basement lights do not work. Corbitt has already cut the breaker in the kitchen."
+        }
+      ],
+      "sub_areas": [
+        {
+          "id": "loc_corbitt_house_gf_room1",
+          "overrides": {
+            "description": "Ground floor storage room. Full of junk: rusty water tank, old bicycle, boxes. A boarded-up cupboard contains 3 volumes of Corbitt's diary."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_gf_room2",
+          "overrides": {
+            "description": "Second ground floor storage room. Old, useless furniture. Nothing of note."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_gf_room3",
+          "overrides": {
+            "description": "Mud room. Coats, boots, umbrellas, coal bags. Back door sealed with 3 deadbolts and 2 locks."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_gf_room4",
+          "overrides": {
+            "description": "Living room. Radio, couch, armchair, shelves with cheap ornaments. Notably many Catholic items — crosses, Virgin Mary statues."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_gf_room5",
+          "overrides": {
+            "description": "Dining room. Mahogany table, sideboard, 7 chairs (3 set but unused). Rotting rice soup in bowls."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_gf_room6",
+          "overrides": {
+            "description": "Kitchen. Ice-cooled refrigerator, wood-burning stove/oven, small pantry. Some canned food, rice, pasta, homemade wine. Non-rotten food eaten by rats."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_uf_room1",
+          "overrides": {
+            "description": "Master bedroom. Vittorio and Gabriella's room. Double bed, bookshelf. Many crosses, candles. Rosary and prayer book on nightstand."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_uf_room2",
+          "overrides": {
+            "description": "Children's bedroom. Two small beds, toys, wardrobe. Airplane and cowboy pictures on walls."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_uf_room3",
+          "overrides": {
+            "description": "Spare bedroom — old Corbitt's room. Bed frame with bare springs, empty wardrobe. Corbitt's spiritual influence is strongest here. Source of strange sounds, blood phenomena, and the bed attack.",
+            "risk": [
+              { "type": "physical", "level": "high" }
+            ]
+          }
+        },
+        {
+          "id": "loc_corbitt_house_uf_room4",
+          "overrides": {
+            "description": "Bathroom. Sink, bathtub, flush toilet. Towels for 4 people. Bathtub has brackish water from a leaky faucet."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_basement_room1",
+          "overrides": {
+            "description": "Basement storage room. Tools, pipes, trash can lids, wood, nails, screws. The enchanted knife is hidden here (difficult Spot Hidden). Wooden wall panels conceal hollow spaces (Rooms 2 and 3).",
+            "perception": {
+              "visibility_level": "hidden",
+              "obscurity_factors": "Darkness (Corbitt cut the breaker), cluttered with junk."
+            },
+            "risk": [
+              { "type": "physical", "level": "medium" }
+            ]
+          }
+        },
+        {
+          "id": "loc_corbitt_house_basement_room2",
+          "overrides": {
+            "description": "Empty coal storage behind wooden panels. Coal chute door nailed shut."
+          }
+        },
+        {
+          "id": "loc_corbitt_house_basement_room3",
+          "overrides": {
+            "description": "Corbitt's hidden passage behind wooden walls. Narrow gap with rat nest, foul smell. Wall inscription reads 'Chapel of Contemplation'. Breaking through leads to Room 4.",
+            "risk": [
+              { "type": "physical", "level": "medium" }
+            ]
+          }
+        },
+        {
+          "id": "loc_corbitt_house_basement_room4",
+          "overrides": {
+            "description": "Corbitt's lair. A motionless withered figure on a crude bed — about 180cm, skin and bones, unnervingly wide saucer-like eyes, knife-sharp nose, something chain-like around neck, completely hairless, abnormally long teeth. Nauseating sweet smell like rotting corn. Dirt floor, table in southwest corner with a rolled-up astrological chart.",
+            "risk": [
+              { "type": "physical", "level": "extreme" }
+            ]
+          }
+        }
+      ],
+      "hidden": [
+        { "hint_type": "auditory", "subtlety": "noticeable" },
+        { "hint_type": "visual", "subtlety": "subtle" },
+        { "hint_type": "olfactory", "subtlety": "noticeable" }
+      ]
+    }
+  ],
+
+  "characters": [
+    {
+      "id": "npc_stephen_knott",
+      "description": "The landlord who recently inherited the Corbitt House. A practical man troubled by the property's unsavory reputation and inability to rent or sell it. He hires the investigators.",
+      "knowledge": "Knows the house's reputation for bad luck and hauntings. Knows the Macario family's misfortunes. Does not know the supernatural truth.",
+      "awareness_scope": "Local real estate and tenant history only. No occult knowledge.",
+      "info_control": [
+        { "clue_id": "clue_knott_briefing", "condition": "Freely given at the start of the scenario." }
+      ],
+      "motivation": "Restore the house's reputation so he can rent or sell it.",
+      "agenda": "Hire investigators, pay them, and wait for results. Urges progress if research takes too long. Will stay overnight in the house if investigators report nothing wrong.",
+      "truthfulness": "honest",
+      "pressure_response": "Cooperative but anxious. Becomes impatient if investigation stalls. Genuinely believes the house is just unlucky, not supernaturally dangerous.",
+      "disclosure": {
+        "baseline_openness": "open",
+        "guardedness": "None — he wants the problem solved.",
+        "trust_sensitivity": "responsive"
+      },
+      "taboo_topics": null,
+      "communication_style": "Businesslike, earnest, slightly anxious. Speaks plainly.",
+      "relationships": "Employer of the investigators. No known relationship to Corbitt or the cult."
+    },
+    {
+      "id": "npc_arty_wilmot",
+      "description": "Editor at the Boston Globe. Pompous and self-important. Guards access to the clipping files in the basement.",
+      "knowledge": "Knows the newspaper's archive system. Not personally aware of Corbitt or the house's history.",
+      "awareness_scope": "Newspaper operations and local Boston news.",
+      "info_control": [
+        { "clue_id": "clue_globe_article", "condition": "Investigators must pass a social skill check (Charm/Intimidate/Persuade/Fast Talk) to convince Arty to grant access to the clipping files." }
+      ],
+      "motivation": "Protect his turf and maintain authority over the reference room.",
+      "agenda": "Refuse access by default. Grudgingly relent if properly persuaded. Call security if pushed too far.",
+      "truthfulness": "honest",
+      "pressure_response": "Intimidation: may escalate to a fight. Charm/Persuade pushed failure: gets angry, calls security. Smugly dismissive on initial failure.",
+      "disclosure": {
+        "baseline_openness": "closed",
+        "guardedness": "Access to the clipping files — treats it as his personal domain.",
+        "trust_sensitivity": "slow"
+      },
+      "taboo_topics": "Challenges to his authority.",
+      "communication_style": "Pompous, condescending, self-important.",
+      "relationships": "Works with record keeper Ruth Blake."
+    },
+    {
+      "id": "npc_ruth_blake",
+      "description": "Record keeper at the Boston Globe. Manages the clipping files in the basement.",
+      "knowledge": "Knows the archive system. Aware that files before an 1878 fire are incomplete.",
+      "awareness_scope": "Newspaper archives only.",
+      "info_control": [
+        { "clue_id": "clue_pre1878_gap", "condition": "Freely mentions this when investigators access the clipping files. No roll needed." }
+      ],
+      "motivation": "Professional — helpful to authorized visitors.",
+      "agenda": "Assist anyone Arty has cleared.",
+      "truthfulness": "honest",
+      "pressure_response": "Cooperative and straightforward.",
+      "disclosure": {
+        "baseline_openness": "open",
+        "guardedness": "None.",
+        "trust_sensitivity": "responsive"
+      },
+      "taboo_topics": null,
+      "communication_style": "Professional, matter-of-fact.",
+      "relationships": "Works under Arty Wilmot."
+    },
+    {
+      "id": "npc_doherty",
+      "description": "A neighborhood shopkeeper near the Corbitt House. A gossip who exaggerates. The Keeper should not treat everything he says as fully reliable.",
+      "knowledge": "Knows about the Macario family's history at the house — the father's accident and violent insanity, his ravings about a monster with burning eyes, the mother's subsequent insanity, and that both are at Roxbury Sanitarium. Knows the children went to relatives in Baltimore. Knows the Chapel location (2-3 blocks away).",
+      "awareness_scope": "Local neighborhood gossip and observation. No historical or occult knowledge.",
+      "info_control": [
+        { "clue_id": "clue_macario_history", "condition": "APP or Credit Rating check determines friendliness. If unfriendly, other investigators can try Charm/Fast Talk/Persuade/Intimidate." },
+        { "clue_id": "clue_chapel_location", "condition": "Asked about the Chapel of Contemplation." },
+        { "clue_id": "clue_sanitarium_location", "condition": "Volunteered as part of Macario story." }
+      ],
+      "motivation": "Enjoys gossip and being the center of attention.",
+      "agenda": "Talk at length about local scandals if engaged. Exaggerate for effect.",
+      "truthfulness": "mostly_honest",
+      "pressure_response": "Responds to friendliness more than pressure. May clam up if intimidated too aggressively.",
+      "disclosure": {
+        "baseline_openness": "neutral",
+        "guardedness": "Not guarded about topics — guarded about strangers. Warms up based on APP/Credit Rating.",
+        "trust_sensitivity": "responsive"
+      },
+      "taboo_topics": null,
+      "communication_style": "Garrulous, gossipy, prone to exaggeration and dramatic embellishment.",
+      "relationships": "No significant relationships to other NPCs. Long-time neighborhood resident."
+    },
+    {
+      "id": "npc_kim_debran",
+      "description": "A clerk at the Higher Courts. Can provide access to the Chapel raid records — but only if approached through proper legal channels or social skills.",
+      "knowledge": "Knows the court filing system. Has access to criminal records including the 1912 Chapel raid.",
+      "awareness_scope": "Court administration only.",
+      "info_control": [
+        { "clue_id": "clue_chapel_raid", "condition": "Successful Law roll grants friendly access. Law failure: DeBran demands bribe then betrays the investigators." }
+      ],
+      "motivation": "Self-interest. Will help if it benefits them, betray if it's safer.",
+      "agenda": "Gate access to records. Exploit opportunities.",
+      "truthfulness": "selective",
+      "pressure_response": "On Law failure: demands a bribe, then betrays. Responds to authority (Credit Rating 75%+) or charm.",
+      "disclosure": {
+        "baseline_openness": "guarded",
+        "guardedness": "Unauthorized access to records.",
+        "trust_sensitivity": "moderate"
+      },
+      "taboo_topics": null,
+      "communication_style": "Bureaucratic, transactional.",
+      "relationships": null
+    },
+    {
+      "id": "npc_vittorio_macario",
+      "description": "Former tenant of the Corbitt House. Now a patient at Roxbury Sanitarium. Clearly insane — clutches a Bible to his chest.",
+      "knowledge": "Has fragmentary, deranged awareness of Corbitt's nature. Subconsciously understands Corbitt's dagger weakness.",
+      "awareness_scope": "Traumatic personal experience only. Cannot articulate coherently.",
+      "info_control": [
+        { "clue_id": "clue_bible_hint", "condition": "May spontaneously open Bible and point to a passage during visit. No roll needed but GM should not over-emphasize." }
+      ],
+      "motivation": "Survival instinct buried under insanity.",
+      "agenda": "None — largely unresponsive except for occasional lucid flashes.",
+      "truthfulness": "honest",
+      "pressure_response": "Does not respond meaningfully to pressure. Lost in his own world.",
+      "disclosure": {
+        "baseline_openness": "closed",
+        "guardedness": "Everything — too insane to communicate normally.",
+        "trust_sensitivity": "rigid"
+      },
+      "taboo_topics": null,
+      "communication_style": "Incoherent. Bible-clutching. Occasional cryptic utterances.",
+      "relationships": "Husband of Gabriella Macario. Father of the children in Baltimore."
+    },
+    {
+      "id": "npc_gabriella_macario",
+      "description": "Former tenant of the Corbitt House. Patient at Roxbury Sanitarium. More lucid than her husband — can describe the haunting.",
+      "knowledge": "Experienced the haunting firsthand. Knows about a malevolent presence that pressed down on her at night, threw objects, and particularly hated Vittorio. Cannot identify Corbitt specifically.",
+      "awareness_scope": "Personal experience in the house. No historical or occult knowledge.",
+      "info_control": [
+        { "clue_id": "clue_gabriella_testimony", "condition": "Freely shared during interview but becomes agitated. Interview should be cut short by staff." }
+      ],
+      "motivation": "Wants someone to understand what happened to her family.",
+      "agenda": "Talk about the experience until overwhelmed by emotion.",
+      "truthfulness": "honest",
+      "pressure_response": "Becomes agitated and distressed. Staff will intervene.",
+      "disclosure": {
+        "baseline_openness": "open",
+        "guardedness": "Becomes emotionally overwhelmed when recalling specific details.",
+        "trust_sensitivity": "responsive"
+      },
+      "taboo_topics": null,
+      "communication_style": "Lucid but fragile. Descriptive but increasingly distressed.",
+      "relationships": "Wife of Vittorio. Mother of children in Baltimore."
+    },
+    {
+      "id": "npc_walter_corbitt",
+      "description": "An undead sorcerer lying in the basement of the Corbitt House. His body is withered like wood — skin and bones, saucer-like eyes, knife-sharp nose, chain around neck, hairless, abnormally long teeth, nauseating sweet smell. STR 90, CON 115, SIZ 55, INT 80, POW 90, DEX 35, HP 17, MP 18 (recovers 1/hour). Knows Cthulhu Mythos sorcery.",
+      "knowledge": "Extensive Mythos knowledge (Cthulhu Mythos 17%). Aware of everything happening inside the Corbitt House. Knows Dominate, Flesh Protection, and Summon/Bind Dimensional Shambler spells.",
+      "awareness_scope": "Everything within the Corbitt House. His awareness does not extend outside the property.",
+      "info_control": [],
+      "motivation": "Self-preservation and malicious enjoyment of suffering. Protect his undead existence.",
+      "agenda": "Notice intruders, try to mislead and scare them away. If that fails, try to kill them. Takes perverse pleasure in turning investigators against each other. Will try to acquire any Mythos knowledge brought into the house.",
+      "truthfulness": "deceptive",
+      "pressure_response": "Escalates violence. Uses Dominate to turn investigators against each other. Rises physically only when directly threatened.",
+      "disclosure": {
+        "baseline_openness": "closed",
+        "guardedness": "Everything — communicates only through supernatural attacks and the Dominate spell.",
+        "trust_sensitivity": "rigid"
+      },
+      "taboo_topics": null,
+      "communication_style": "Does not speak. Communicates through poltergeist activity, Dominate spell telepathy, and physical violence.",
+      "relationships": "Connected to the Chapel of Contemplation cult. Will was executed by Rev. Michael Thomas. No living allies."
+    }
+  ],
+
+  "clues": [
+    {
+      "id": "clue_knott_briefing",
+      "description": "Mr. Knott's initial briefing about the Corbitt House — its haunted reputation, the Macario family's misfortunes, inability to rent or sell.",
+      "discoverability": "Freely given at scenario start.",
+      "interpretability": {
+        "primary": "The house has a bad reputation due to a string of tenant misfortunes.",
+        "alternative": "Could be mere bad luck or structural problems rather than anything supernatural."
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "Reliable as far as Knott knows, but he does not understand the cause.",
+      "info_layers": {
+        "observed": "Mr. Knott describes tenant problems, inability to rent, and requests investigation. Provides key, address, and $25 advance.",
+        "possible_meanings": "Something is genuinely wrong with the house — possibly structural, possibly criminal, possibly supernatural.",
+        "truth": "The house is haunted by the undead sorcerer Walter Corbitt who lies in the basement."
+      }
+    },
+    {
+      "id": "clue_globe_article",
+      "description": "An unpublished 1918 Boston Globe article documenting the house's history of tenant disasters from 1880 onward.",
+      "discoverability": "Requires convincing Arty Wilmot (social skill check) to access the Globe's clipping files.",
+      "interpretability": {
+        "primary": "The house has a long, consistent pattern of terrible misfortune affecting multiple families over decades.",
+        "alternative": "Could be coincidence, environmental hazard (lead paint, gas leak), or a curse."
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "Journalistic source — factual but the article was never published, suggesting editorial caution.",
+      "info_layers": {
+        "observed": "1880: French immigrant family fled after parents died and children were disabled. 1909: family struck by illness, eldest son killed himself with kitchen knife in 1914. 1918: Macario family left due to inexplicable events.",
+        "possible_meanings": "A persistent, malevolent force has been afflicting every family that lives in the house for nearly 40 years.",
+        "truth": "All these disasters were caused by Corbitt's ongoing supernatural attacks from the basement."
+      }
+    },
+    {
+      "id": "clue_pre1878_gap",
+      "description": "Ruth Blake mentions that Globe files before an 1878 fire are incomplete.",
+      "discoverability": "Freely mentioned by Ruth Blake when investigators access the clipping files. No roll needed.",
+      "interpretability": {
+        "primary": "There may be earlier incidents that are simply unrecorded.",
+        "alternative": null
+      },
+      "importance": "minor",
+      "misleading": null,
+      "reliability": "Reliable — factual archival limitation.",
+      "info_layers": {
+        "observed": "Clipping files before 1878 were destroyed in a fire.",
+        "possible_meanings": "The house's troubles may extend further back than 1880 — the record simply doesn't go that far.",
+        "truth": "Corbitt moved into the house in the 1830s and has been there ever since. The missing records hide the earliest decades of his occupation."
+      }
+    },
+    {
+      "id": "clue_library_merchant",
+      "description": "Library record: In 1835, a prosperous merchant built the house but soon fell ill and sold it to Walter Corbitt.",
+      "discoverability": "First successful Library Use roll at the Central Library.",
+      "interpretability": {
+        "primary": "Walter Corbitt acquired the house under suspicious circumstances — the original owner fell ill.",
+        "alternative": "The merchant's illness could be coincidental."
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "Historical record — reliable.",
+      "info_layers": {
+        "observed": "A merchant built the house in 1835, fell ill, and sold to Walter Corbitt.",
+        "possible_meanings": "Corbitt may have caused the merchant's illness to acquire the property cheaply.",
+        "truth": "Corbitt likely used sorcery or other means to force the sale. This established his presence in the house."
+      }
+    },
+    {
+      "id": "clue_library_lawsuit",
+      "description": "Library record: In 1852, neighbors sued Walter Corbitt for 'strange habits and sinister conduct,' demanding he leave.",
+      "discoverability": "Second successful Library Use roll at the Central Library.",
+      "interpretability": {
+        "primary": "Corbitt's behavior was disturbing enough to provoke legal action from his neighbors.",
+        "alternative": "Could be mere prejudice against an eccentric."
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "Court record — reliable.",
+      "info_layers": {
+        "observed": "1852 lawsuit by neighbors citing strange habits and sinister conduct.",
+        "possible_meanings": "Corbitt was practicing occult rituals or otherwise behaving in ways that frightened the community.",
+        "truth": "Corbitt was practicing Cthulhu Mythos sorcery. His 'strange habits' were genuine occult activities."
+      }
+    },
+    {
+      "id": "clue_library_obituary",
+      "description": "Library record: Corbitt's 1866 obituary states he still lived at the same address. Mentions a second lawsuit — neighbors tried to prevent his will's instruction to bury him in the basement.",
+      "discoverability": "Third successful Library Use roll at the Central Library.",
+      "interpretability": {
+        "primary": "Corbitt died in 1866 but wanted to be buried in the house's basement — an extremely unusual request that neighbors actively opposed.",
+        "alternative": "Could be an eccentric burial wish with no supernatural significance."
+      },
+      "importance": "critical",
+      "misleading": null,
+      "reliability": "Obituary and court record — reliable.",
+      "info_layers": {
+        "observed": "Corbitt died in 1866 and apparently won the first lawsuit. His will directed burial in the house basement. Neighbors filed a second lawsuit to prevent this.",
+        "possible_meanings": "Being buried in the basement was essential to Corbitt's plan. This is likely where his body still lies.",
+        "truth": "Corbitt's body is indeed in the basement, preserved by Mythos sorcery. His 'death' was a transition to undead existence, and burial in the house was required for his continued haunting."
+      }
+    },
+    {
+      "id": "clue_library_no_record",
+      "description": "No record exists of the second lawsuit's outcome.",
+      "discoverability": "Fourth successful Library Use roll at the Central Library.",
+      "interpretability": {
+        "primary": "The outcome of the burial lawsuit is unknown — the burial may or may not have occurred.",
+        "alternative": "The missing record could indicate cover-up or destruction of evidence."
+      },
+      "importance": "minor",
+      "misleading": "Could lead investigators to believe the burial was blocked, when in fact it was carried out.",
+      "reliability": "The absence of records is itself reliable information.",
+      "info_layers": {
+        "observed": "No record of the second lawsuit's outcome in the library.",
+        "possible_meanings": "The case may have been settled privately, or records may have been suppressed.",
+        "truth": "Corbitt's cult allies ensured the burial occurred. The lack of records reflects the cult's influence."
+      }
+    },
+    {
+      "id": "clue_hall_will",
+      "description": "Civil court records show Corbitt's will was executed by Reverend Michael Thomas, pastor of the Chapel of Contemplation & Church of Our Lord Granter of Secrets. Church registers show the Chapel was closed in 1912.",
+      "discoverability": "Library Use roll at the Hall of Records.",
+      "interpretability": {
+        "primary": "Corbitt was connected to a specific church — the Chapel of Contemplation — through his executor Rev. Thomas. The church was shut down in 1912.",
+        "alternative": null
+      },
+      "importance": "critical",
+      "misleading": null,
+      "reliability": "Official records — reliable.",
+      "info_layers": {
+        "observed": "Corbitt's will executor was Rev. Michael Thomas of the Chapel of Contemplation. The Chapel was closed in 1912.",
+        "possible_meanings": "Corbitt was a member or patron of this church. The church's closure may be related to criminal activity. Rev. Thomas is a key figure connecting Corbitt to an organized group.",
+        "truth": "The Chapel of Contemplation was a Cthulhu Mythos cult. Rev. Thomas was its leader. They facilitated Corbitt's undead burial and subsequent haunting."
+      }
+    },
+    {
+      "id": "clue_chapel_raid",
+      "description": "Police raid records: The Chapel was raided based on reports of missing children. 3 officers and 17 cultists died. 54 arrested, all but 8 released. Cover-up by local officials. Rev. Thomas sentenced to 40 years, escaped in 1917.",
+      "discoverability": "Requires accessing Higher Courts or Central Police Station records (social skill checks required).",
+      "interpretability": {
+        "primary": "The Chapel was a violent, criminal cult that kidnapped children. The cover-up suggests powerful protectors.",
+        "alternative": null
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "Official police and court records, though the cover-up makes the full truth unclear.",
+      "info_layers": {
+        "observed": "Sworn statements about missing children triggered the raid. Violent confrontation: 3 officers, 17 cultists dead. 54 arrested, most released. Suspiciously vague coroner's report. Story was never published despite being the city's biggest crime case. Rev. Thomas sentenced to 40 years, escaped 1917.",
+        "possible_meanings": "This was a dangerous cult with political connections enabling a cover-up. Rev. Thomas — Corbitt's will executor — was its leader. The cult may still have influence.",
+        "truth": "The Chapel of Contemplation worshipped Mythos entities. The cover-up was orchestrated by cult-sympathetic officials. Thomas's escape suggests ongoing cult activity."
+      }
+    },
+    {
+      "id": "clue_macario_history",
+      "description": "Doherty's account of the Macario family: father had a serious accident then went violently insane, raving about a monster with burning eyes. Mother also went insane about a month later. Both at Roxbury Sanitarium. Children sent to relatives in Baltimore.",
+      "discoverability": "Requires engaging Doherty with an APP or Credit Rating check, or social skill rolls if initially unfriendly.",
+      "interpretability": {
+        "primary": "The most recent tenants suffered the same pattern as all previous families — escalating terror and madness.",
+        "alternative": "Doherty exaggerates; the actual situation may be less dramatic."
+      },
+      "importance": "major",
+      "misleading": "Doherty is a gossip who exaggerates. Details may be embellished.",
+      "reliability": "Core facts are reliable but details may be exaggerated.",
+      "info_layers": {
+        "observed": "Doherty recounts the Macario family's decline: accident, insanity, ravings about burning eyes, mother's madness.",
+        "possible_meanings": "The 'burning eyes' description matches a specific entity or apparition. The pattern of escalation suggests an intelligent malevolent force.",
+        "truth": "Vittorio saw Corbitt's undead form — the burning eyes are Corbitt's. The systematic destruction of the family is Corbitt's deliberate campaign."
+      }
+    },
+    {
+      "id": "clue_chapel_location",
+      "description": "The Chapel of Contemplation is located 2-3 blocks from the neighborhood.",
+      "discoverability": "Doherty provides this when asked about the Chapel.",
+      "interpretability": {
+        "primary": "The cult's church was very close to Corbitt's house — they were neighbors.",
+        "alternative": null
+      },
+      "importance": "minor",
+      "misleading": null,
+      "reliability": "Reliable — Doherty knows the local area well.",
+      "info_layers": {
+        "observed": "The Chapel ruins are 2-3 blocks from the Corbitt House.",
+        "possible_meanings": "Corbitt and the cult had a close geographic and likely personal relationship.",
+        "truth": "The proximity reflects the cult's direct involvement in maintaining Corbitt's undead existence."
+      }
+    },
+    {
+      "id": "clue_sanitarium_location",
+      "description": "The Macario parents are at Roxbury Sanitarium, 3-5km from Boston.",
+      "discoverability": "Volunteered by Doherty as part of the Macario story.",
+      "interpretability": {
+        "primary": "The former tenants can be interviewed for firsthand accounts.",
+        "alternative": null
+      },
+      "importance": "minor",
+      "misleading": null,
+      "reliability": "Reliable.",
+      "info_layers": {
+        "observed": "Both Macario parents are institutionalized at Roxbury Sanitarium.",
+        "possible_meanings": "Firsthand witnesses of the haunting may provide crucial information.",
+        "truth": "Vittorio holds a cryptic clue about Corbitt's weakness. Gabriella can describe the haunting phenomena."
+      }
+    },
+    {
+      "id": "clue_bible_hint",
+      "description": "Vittorio Macario opens his Bible and points to: 'By his own weapons shall the devil be destroyed!' (not a real Bible quote).",
+      "discoverability": "Vittorio may spontaneously do this during a visit. No roll needed, but GM should not over-emphasize.",
+      "interpretability": {
+        "primary": "A cryptic religious utterance from a madman — possibly meaningless raving.",
+        "alternative": "A literal hint: Corbitt's own weapon (the dagger) can destroy him."
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "The statement itself is from a madman, but the underlying insight is accurate.",
+      "info_layers": {
+        "observed": "An insane man points to a Bible passage about destroying the devil with his own weapons.",
+        "possible_meanings": "Could be religious delusion, or could be a genuine insight about how to defeat whatever is in the house — use the enemy's own weapon against it.",
+        "truth": "This is a genuine clue. Corbitt's enchanted dagger, if used against him, instantly destroys him regardless of any active spells."
+      }
+    },
+    {
+      "id": "clue_gabriella_testimony",
+      "description": "Gabriella Macario's firsthand account of the haunting: a malevolent presence that pressed down on her at night, threw objects, and particularly hated her husband.",
+      "discoverability": "Freely shared during interview at the sanitarium.",
+      "interpretability": {
+        "primary": "A coherent account of poltergeist-like activity directed by an intelligence that specifically targeted Vittorio.",
+        "alternative": "Could be interpreted as shared psychosis or sleep paralysis with embellishment."
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "Gabriella is lucid and her account is consistent, but she is institutionalized and emotionally fragile.",
+      "info_layers": {
+        "observed": "Gabriella describes being pressed down at night, objects thrown by invisible force, particular malice toward Vittorio.",
+        "possible_meanings": "An intelligent entity haunts the house and selectively targets residents. The entity has physical power (pressing, throwing) and emotional awareness (hatred).",
+        "truth": "Corbitt uses telekinetic power and Dominate to terrorize residents. He targeted Vittorio as the head of household and primary threat to his concealment."
+      }
+    },
+    {
+      "id": "clue_chapel_symbol",
+      "description": "A recently painted white symbol on the Chapel ruins — three Ys forming a triangle with an eye in the center.",
+      "discoverability": "Visible on approach to the Chapel ruins. Obvious.",
+      "interpretability": {
+        "primary": "An occult symbol associated with the cult. The recent paint suggests the cult is still active.",
+        "alternative": "Could be graffiti or unrelated vandalism."
+      },
+      "importance": "minor",
+      "misleading": null,
+      "reliability": "The symbol is physically present and clearly recent.",
+      "info_layers": {
+        "observed": "A freshly painted occult symbol on the ruins of a church shut down for cult activity.",
+        "possible_meanings": "The cult that once operated here may still be active. Someone is maintaining the site.",
+        "truth": "The cult does have surviving members. This is a future adventure hook, not directly relevant to defeating Corbitt."
+      }
+    },
+    {
+      "id": "clue_chapel_headache",
+      "description": "Investigators feel a throbbing sensation in their foreheads near the Chapel symbol — like a headache, but different. Stops when they leave.",
+      "discoverability": "Automatically experienced when near the symbol.",
+      "interpretability": {
+        "primary": "The symbol has some kind of supernatural aura or psychic effect.",
+        "alternative": "Could be psychosomatic — expectation of something creepy."
+      },
+      "importance": "flavor",
+      "misleading": null,
+      "reliability": "Direct personal experience — reliable but unexplainable.",
+      "info_layers": {
+        "observed": "A distinct, unusual headache-like sensation that activates near the symbol and stops when moving away.",
+        "possible_meanings": "The symbol itself is supernaturally charged. The cult's magic has residual power.",
+        "truth": "The symbol radiates Mythos energy. It is a marker for the cult and has genuine supernatural properties."
+      }
+    },
+    {
+      "id": "clue_chapel_journal",
+      "description": "A crumbling journal found in the Chapel basement. Mentions Walter Corbitt was buried in the Corbitt House basement 'by his own wish and the wish of That Which Waits in the Dark.'",
+      "discoverability": "Spot Hidden roll in the Chapel basement (accessible only via floor collapse).",
+      "interpretability": {
+        "primary": "Confirms Corbitt is buried in the house basement. 'That Which Waits in the Dark' implies a Mythos entity sponsored the burial.",
+        "alternative": null
+      },
+      "importance": "critical",
+      "misleading": null,
+      "reliability": "Primary source from a cultist — the facts about burial are reliable.",
+      "info_layers": {
+        "observed": "A journal states Corbitt was buried in the house basement by his own wish and the wish of an entity called 'That Which Waits in the Dark.'",
+        "possible_meanings": "Corbitt's basement burial is confirmed. A supernatural patron entity was involved. The cult facilitated this.",
+        "truth": "Corbitt's body lies in the basement, animated by Mythos sorcery. 'That Which Waits in the Dark' is a Mythos entity connected to the cult."
+      }
+    },
+    {
+      "id": "clue_book_of_eibon",
+      "description": "A grimoire — the Book of Eibon — found in the Chapel basement. Written in Latin. Reading grants +2% Cthulhu Mythos, -2 maximum SAN.",
+      "discoverability": "Found alongside the journal in the Chapel basement (Spot Hidden roll).",
+      "interpretability": {
+        "primary": "A genuine occult text with real power — reading it changes the reader.",
+        "alternative": null
+      },
+      "importance": "minor",
+      "misleading": null,
+      "reliability": "The book is genuine Mythos material.",
+      "info_layers": {
+        "observed": "A Latin grimoire found with cultist remains. First reading takes 3+ hours and requires Other Language (Latin) if skill < 50%.",
+        "possible_meanings": "Contains real occult knowledge. The Mythos skill gain and SAN loss confirm its supernatural nature.",
+        "truth": "The Book of Eibon is a genuine Mythos tome. It is a reward/hook for future scenarios, not essential for defeating Corbitt."
+      }
+    },
+    {
+      "id": "clue_corbitt_diary",
+      "description": "Three volumes of Corbitt's diary found in a boarded-up cupboard on the ground floor of the Corbitt House. Written in English with some strange expressions. Reading all 3 takes 2 full days. Grants +4% Cthulhu Mythos, costs 1D4 SAN. Contains the spell Summon/Bind Dimensional Shambler.",
+      "discoverability": "Found by searching the ground floor storage room. The cupboard is boarded up, suggesting deliberate concealment.",
+      "interpretability": {
+        "primary": "Corbitt's personal writings confirm his occult practices and deep Mythos involvement.",
+        "alternative": null
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "Primary source — Corbitt's own words. Reliable for his activities and beliefs.",
+      "info_layers": {
+        "observed": "Three handwritten diary volumes in English with unusual terminology. Boarded-up cupboard suggests the Macarios or previous tenants tried to seal them away.",
+        "possible_meanings": "Corbitt was deeply involved in occult practices. The strange expressions may be Mythos terminology. The spell content confirms he was a practicing sorcerer.",
+        "truth": "The diaries document Corbitt's descent into Mythos sorcery. The Summon/Bind Dimensional Shambler spell is real and learnable (2D6 weeks). Not intended for use in this scenario."
+      }
+    },
+    {
+      "id": "clue_enchanted_knife",
+      "description": "An old knife with an ornate handle and thick 'rust' (actually dried blood). This is Corbitt's magical dagger, hidden in the basement storage room.",
+      "discoverability": "Difficult Spot Hidden in the basement. Push failure = cut hand for 1D4+2 damage.",
+      "interpretability": {
+        "primary": "An unusual, possibly valuable antique knife with suspicious staining.",
+        "alternative": "The 'rust' might be blood. The ornate handle suggests ceremonial use."
+      },
+      "importance": "critical",
+      "misleading": "The dried blood appears to be rust at first glance.",
+      "reliability": "The physical object is reliable evidence of occult practice.",
+      "info_layers": {
+        "observed": "An ornate knife covered in what appears to be thick rust.",
+        "possible_meanings": "A ceremonial or magical weapon. The 'rust' may be dried blood from ritual use.",
+        "truth": "This is Corbitt's enchanted dagger. It levitates and attacks under his control (1 MP per round). If used against Corbitt, it instantly destroys him regardless of active spells — his one true weakness."
+      }
+    },
+    {
+      "id": "clue_chapel_inscription",
+      "description": "Wall inscription in the basement hidden passage (Room 3) of the Corbitt House reading 'Chapel of Contemplation.'",
+      "discoverability": "Visible without Spot Hidden when investigators break through the wooden walls in the basement.",
+      "interpretability": {
+        "primary": "A direct physical link between the Corbitt House and the Chapel of Contemplation cult.",
+        "alternative": null
+      },
+      "importance": "major",
+      "misleading": null,
+      "reliability": "Physical inscription — reliable.",
+      "info_layers": {
+        "observed": "The words 'Chapel of Contemplation' are roughly carved into the wall of a hidden passage in Corbitt's basement.",
+        "possible_meanings": "The house and the cult are directly connected. This passage may have been used by cultists.",
+        "truth": "The passage connects Corbitt's lair to the cult's activities. It confirms the institutional support behind Corbitt's undead existence."
+      }
+    },
+    {
+      "id": "clue_corbitt_body",
+      "description": "Corbitt's withered undead body lying on a crude bed in the deepest basement room. Approximately 180cm, desiccated, saucer-like eyes, knife-sharp nose, chain around neck, hairless, long teeth, sweet rotting smell.",
+      "discoverability": "Found by breaking through walls from the basement storage area through the hidden passage.",
+      "interpretability": {
+        "primary": "A preserved corpse — possibly mummified — in a hidden room beneath the house.",
+        "alternative": null
+      },
+      "importance": "critical",
+      "misleading": "May initially appear to be a long-dead corpse rather than an animate threat.",
+      "reliability": "Direct observation — reliable.",
+      "info_layers": {
+        "observed": "A withered but intact humanoid body on a bed in a hidden basement room. Sweet rotting smell. Astrological chart on a nearby table.",
+        "possible_meanings": "This is Walter Corbitt — buried in the basement as his will directed. The preservation suggests supernatural intervention. The body may not truly be dead.",
+        "truth": "Corbitt is undead and aware. He can cast Dominate, rise physically (costing 2 MP for 5 rounds), and fight with tremendous strength (STR 90). His enchanted dagger is his weakness."
+      }
+    },
+    {
+      "id": "clue_astrological_chart",
+      "description": "A rolled-up piece of paper on a table in Corbitt's lair. Appears to be an astrological chart. Crumbles on touch.",
+      "discoverability": "Visible in Corbitt's lair when investigators reach Room 4.",
+      "interpretability": {
+        "primary": "An occult document related to Corbitt's sorcerous practices.",
+        "alternative": "Could be a mundane astrological hobby item."
+      },
+      "importance": "flavor",
+      "misleading": null,
+      "reliability": "Too fragile to study in detail. A hook, not a clue.",
+      "info_layers": {
+        "observed": "A crumbling astrological chart on a table beside Corbitt's body.",
+        "possible_meanings": "Corbitt was involved in astrological or cosmic calculations as part of his sorcery.",
+        "truth": "A potential hook for future adventures. No immediate mechanical relevance to defeating Corbitt."
+      }
+    }
+  ],
+
+  "events": [
+    {
+      "id": "evt_knott_urges_progress",
+      "triggers": {
+        "time_elapsed": "More than one full day of library research"
+      },
+      "conditions": "Investigators are still at the Central Library.",
+      "effects": "Mr. Knott contacts investigators to urge progress, creating time pressure."
+    },
+    {
+      "id": "evt_chapel_floor_collapse",
+      "triggers": {
+        "location_entry": "loc_chapel",
+        "player_action": "Exploring the ruins, walking on rotted floorboards"
+      },
+      "conditions": "Luck roll failure.",
+      "effects": "Floor gives way. Jump roll: success = leap to safety. Failure = fall 3m into Chapel basement, 1D6 damage. Pushed Jump failure = additional consequences (broken equipment). Investigator lands in isolated room with cultist skeletons."
+    },
+    {
+      "id": "evt_house_creepy_atmosphere",
+      "triggers": {
+        "location_entry": "loc_corbitt_house"
+      },
+      "conditions": null,
+      "effects": "Corbitt becomes aware of investigators. GM should build a creepy atmosphere. Strange sounds from the upper floor spare bedroom can occur at any time. Corbitt is observing and planning."
+    },
+    {
+      "id": "evt_spare_bedroom_phenomena",
+      "triggers": {
+        "location_entry": "loc_corbitt_house_uf_room3"
+      },
+      "conditions": null,
+      "effects": "Corbitt manifests poltergeist phenomena: heavy thumping sounds, blood pooling on floor or dripping from ceiling/walls, rattling and scratching at windows and doors, violent bed movement. SAN implications from witnessing supernatural events."
+    },
+    {
+      "id": "evt_bed_attack",
+      "triggers": {
+        "player_action": "Investigator approaches the window in the spare bedroom"
+      },
+      "conditions": "Corbitt has lured the investigator to the window.",
+      "effects": "The bed launches at the investigator. Spot Hidden to notice the bed moving. If noticed, Dodge to avoid. Failure: slammed through the window for 1D6+2 damage from broken glass and fall. SAN check 1/1D4 for witnessing the bed move on its own."
+    },
+    {
+      "id": "evt_floating_knife",
+      "triggers": {
+        "player_action": "Finding the enchanted knife in basement storage, OR beginning to break through basement walls"
+      },
+      "conditions": "Knife is present and Corbitt has MP to spend.",
+      "effects": "The knife levitates and attacks investigators. Each round costs Corbitt 1 MP. Attack uses Corbitt's POW 90 vs investigator's Dodge. Regular success: 1D4+2 damage. Hard success: 1D4+2 (ignores regular Dodge). Extreme: impale 6+1D4+2. SAN check 1/1D4 for seeing a floating knife. Unaware investigators get no Dodge (Spot Hidden needed first). Combat maneuver possible to grab the knife."
+    },
+    {
+      "id": "evt_rat_swarm",
+      "triggers": {
+        "player_action": "Entering the hidden passage (basement Room 3)"
+      },
+      "conditions": "Rats have not been given an escape route.",
+      "effects": "Rat swarm attacks. STR 35, CON 55, HP 9. Fighting 40%, Damage 1D3. Swarm maneuver: 2D6 with bonus die. Dodge 42%. Killing 1-2 rats causes the rest to flee."
+    },
+    {
+      "id": "evt_corbitt_dominate",
+      "triggers": {
+        "player_action": "Investigators are inside the Corbitt House"
+      },
+      "conditions": "Corbitt has MP to spend (1 MP per casting). Target must be inside the house.",
+      "effects": "Corbitt casts Dominate on one investigator. Opposed roll: Corbitt POW 90 vs target's POW. Success: target is dazed for 1D6+1 rounds under Corbitt's telepathic control. Can force murder or reckless actions (not suicide). Victim remembers nothing afterward. Initiative: DEX+50 (instant casting)."
+    },
+    {
+      "id": "evt_corbitt_rises",
+      "triggers": {
+        "player_action": "Investigators directly threaten Corbitt's body in Room 4"
+      },
+      "conditions": "Corbitt feels threatened. Costs 2 MP for 5 combat rounds of movement.",
+      "effects": "Corbitt rises from his bed and fights physically. SAN check 1/1D8 (5+ SAN lost triggers INT roll for temporary insanity). STR 90, Fighting 50%, Damage 1D3+1D4+infection risk. Dodge 17%. Armor: Flesh Protection (2D6 points, depletes as absorbed). Infection: Luck failure after claw hit → CON roll chain → possible 1D10 days delirium and 1D10 permanent CON loss."
+    },
+    {
+      "id": "evt_corbitt_destroyed",
+      "triggers": {
+        "player_action": "Corbitt is killed or destroyed"
+      },
+      "conditions": null,
+      "effects": "If stabbed with his own enchanted dagger, Corbitt instantly crumbles to dust regardless of active spells. Otherwise, must be reduced to 0 HP through conventional damage. Sunlight causes pain and may kill him (Keeper discretion). On destruction: Mr. Knott pays generously, each investigator gains 1D6 SAN. Investigators may claim the Book of Eibon from the Chapel."
+    },
+    {
+      "id": "evt_report_nothing_wrong",
+      "triggers": {
+        "player_action": "Investigators report nothing wrong to Mr. Knott"
+      },
+      "conditions": null,
+      "effects": "Mr. Knott stays overnight in the house. Corbitt kills him with the dagger. Investigators face police investigation and must prove their innocence."
+    },
+    {
+      "id": "evt_basement_stairs_hazard",
+      "triggers": {
+        "player_action": "Descending the basement stairs"
+      },
+      "conditions": null,
+      "effects": "Each investigator rolls DEX + Climb (single D100 vs both). Both failures = warned stairs are dangerous, may push or stay on ground floor. Pushed failure = fall to basement floor for 1D6 damage. A successful investigator can help others (bonus die, but failure means both fall). Basement lights don't work (Corbitt cut the breaker)."
+    }
+  ],
+
+  "information_structure": {
+    "links": [
+      { "clue_id": "clue_knott_briefing", "entity_type": "character", "entity_id": "npc_stephen_knott", "method": "testimony" },
+      { "clue_id": "clue_globe_article", "entity_type": "location", "entity_id": "loc_boston_globe", "method": "document" },
+      { "clue_id": "clue_pre1878_gap", "entity_type": "character", "entity_id": "npc_ruth_blake", "method": "testimony" },
+      { "clue_id": "clue_library_merchant", "entity_type": "location", "entity_id": "loc_central_library", "method": "document" },
+      { "clue_id": "clue_library_lawsuit", "entity_type": "location", "entity_id": "loc_central_library", "method": "document" },
+      { "clue_id": "clue_library_obituary", "entity_type": "location", "entity_id": "loc_central_library", "method": "document" },
+      { "clue_id": "clue_library_no_record", "entity_type": "location", "entity_id": "loc_central_library", "method": "document" },
+      { "clue_id": "clue_hall_will", "entity_type": "location", "entity_id": "loc_hall_of_records", "method": "document" },
+      { "clue_id": "clue_chapel_raid", "entity_type": "location", "entity_id": "loc_higher_courts", "method": "document" },
+      { "clue_id": "clue_macario_history", "entity_type": "character", "entity_id": "npc_doherty", "method": "testimony" },
+      { "clue_id": "clue_chapel_location", "entity_type": "character", "entity_id": "npc_doherty", "method": "testimony" },
+      { "clue_id": "clue_sanitarium_location", "entity_type": "character", "entity_id": "npc_doherty", "method": "testimony" },
+      { "clue_id": "clue_bible_hint", "entity_type": "character", "entity_id": "npc_vittorio_macario", "method": "testimony" },
+      { "clue_id": "clue_gabriella_testimony", "entity_type": "character", "entity_id": "npc_gabriella_macario", "method": "testimony" },
+      { "clue_id": "clue_chapel_symbol", "entity_type": "location", "entity_id": "loc_chapel", "method": "observation" },
+      { "clue_id": "clue_chapel_headache", "entity_type": "location", "entity_id": "loc_chapel", "method": "observation" },
+      { "clue_id": "clue_chapel_journal", "entity_type": "location", "entity_id": "loc_chapel_basement", "method": "search" },
+      { "clue_id": "clue_book_of_eibon", "entity_type": "location", "entity_id": "loc_chapel_basement", "method": "search" },
+      { "clue_id": "clue_corbitt_diary", "entity_type": "location", "entity_id": "loc_corbitt_house_gf_room1", "method": "search" },
+      { "clue_id": "clue_enchanted_knife", "entity_type": "location", "entity_id": "loc_corbitt_house_basement_room1", "method": "search" },
+      { "clue_id": "clue_chapel_inscription", "entity_type": "location", "entity_id": "loc_corbitt_house_basement_room3", "method": "observation" },
+      { "clue_id": "clue_corbitt_body", "entity_type": "location", "entity_id": "loc_corbitt_house_basement_room4", "method": "observation" },
+      { "clue_id": "clue_astrological_chart", "entity_type": "location", "entity_id": "loc_corbitt_house_basement_room4", "method": "observation" },
+      { "clue_id": "clue_chapel_journal", "entity_type": "event", "entity_id": "evt_chapel_floor_collapse", "method": "search" },
+      { "clue_id": "clue_enchanted_knife", "entity_type": "event", "entity_id": "evt_floating_knife", "method": "observation" }
+    ],
+
+    "essential_clues": [
+      "clue_library_obituary",
+      "clue_corbitt_body",
+      "clue_enchanted_knife"
+    ],
+
+    "dependencies": [
+      { "required": "clue_knott_briefing", "unlocks": "clue_globe_article" },
+      { "required": "clue_knott_briefing", "unlocks": "clue_library_merchant" },
+      { "required": "clue_library_merchant", "unlocks": "clue_library_lawsuit" },
+      { "required": "clue_library_lawsuit", "unlocks": "clue_library_obituary" },
+      { "required": "clue_library_obituary", "unlocks": "clue_library_no_record" },
+      { "required": "clue_hall_will", "unlocks": "clue_chapel_raid" },
+      { "required": "clue_macario_history", "unlocks": "clue_bible_hint" },
+      { "required": "clue_macario_history", "unlocks": "clue_gabriella_testimony" },
+      { "required": "clue_chapel_inscription", "unlocks": "clue_corbitt_body" }
+    ],
+
+    "reveal_flow": [
+      {
+        "chain": ["clue_knott_briefing", "clue_globe_article", "clue_library_merchant", "clue_library_lawsuit", "clue_library_obituary"],
+        "convergence": "Walter Corbitt was a sinister figure who acquired the house in 1835, was sued by neighbors for strange conduct, and directed his burial in the house's basement — suggesting his body may still be there."
+      },
+      {
+        "chain": ["clue_hall_will", "clue_chapel_raid", "clue_chapel_symbol", "clue_chapel_journal"],
+        "convergence": "Corbitt was connected to a violent Cthulhu Mythos cult — the Chapel of Contemplation — whose leader executed his will. A cultist journal confirms Corbitt was buried in the basement by the cult's arrangement with a Mythos entity."
+      },
+      {
+        "chain": ["clue_macario_history", "clue_gabriella_testimony", "clue_bible_hint"],
+        "convergence": "The most recent victims confirm an intelligent, malevolent supernatural presence in the house. Vittorio's cryptic hint suggests the enemy can be destroyed with its own weapon."
+      },
+      {
+        "chain": ["clue_corbitt_diary", "clue_enchanted_knife", "clue_chapel_inscription", "clue_corbitt_body"],
+        "convergence": "The physical evidence in the house confirms everything: Corbitt was a Mythos sorcerer, his cult connection is carved into the walls, his enchanted dagger is his weapon and his weakness, and his undead body awaits in the deepest chamber."
+      }
+    ]
+  }
+}
