@@ -79,7 +79,12 @@ All commands are executed in the `#trpg-main` channel on the **Palworld** Discor
 | `!cskill <skill_name> <value>` | Allocate skill points                    |
 | `!cbuy <item_name>`            | Purchase an item and add it to inventory |
 | `!cmeta <name>`                | Finalize and save the character          |
+| `!cweapons`           | Show available weapon templates              |
+| `!cweapon <template>` | Add a weapon from template to your character |
 | `!cstatus`                     | Show current character creation status   |
+
+
+
 
 
 ---

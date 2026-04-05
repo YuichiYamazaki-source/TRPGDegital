@@ -328,6 +328,34 @@ async def char_status(ctx: commands.Context):
     await ctx.send("\n".join(lines))
 
 
+@bot.command(name="cweapons")
+async def list_weapon_templates(ctx):
+    templates = await api.get("/weapon/templates")
+
+    lines = ["武器テンプレ一覧"]
+    for k, v in templates.items():
+        lines.append(f"- `{k}`: {v['name']} ({v['damage']})")
+
+    await ctx.send("\n".join(lines))
+    
+@bot.command(name="cweapon")
+async def add_weapon_template_cmd(ctx, template: str):
+    build_id = _get_build_id(ctx)
+    if not build_id:
+        await ctx.send("!cstart を先に実行してください")
+        return
+
+    try:
+        await api.post("/character/add_weapon_template", {
+            "build_id": build_id,
+            "template": template
+        })
+
+        await ctx.send(f"武器追加: {template}")
+
+    except aiohttp.ClientError:
+        await ctx.send("テンプレが存在しません")
+
 # --- Run ---
 
 

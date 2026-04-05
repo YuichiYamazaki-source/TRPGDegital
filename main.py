@@ -12,6 +12,8 @@ from pydantic import BaseModel
 from gm import GMEngine
 from session import SessionManager
 
+from weapon_templates import WEAPON_TEMPLATES
+
 app = FastAPI(title="CoC AI GM API")
 
 session_manager = SessionManager()
@@ -156,6 +158,9 @@ class ScenarioItem(BaseModel):
 class MessageResponse(BaseModel):
     message: str
 
+class AddWeaponTemplateRequest(BaseModel):
+    build_id: str
+    template: str
 
 # ===== 既存API =====
 
@@ -335,3 +340,22 @@ def finalize_character(req: CharacterMetaRequest):
         "id": data["id"],
         "name": req.name
     }
+    
+@app.get("/weapon/templates")
+def get_weapon_templates():
+    return WEAPON_TEMPLATES
+
+@app.post("/character/add_weapon_template")
+def add_weapon_template(req: AddWeaponTemplateRequest):
+    data = load_build(req.build_id)
+
+    if req.template not in WEAPON_TEMPLATES:
+        raise HTTPException(status_code=400, detail="Invalid template")
+
+    weapon = WEAPON_TEMPLATES[req.template].copy()
+
+    data["character"]["weapons"].append(weapon)
+
+    save_build(req.build_id, data)
+
+    return data
