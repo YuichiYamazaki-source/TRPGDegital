@@ -21,9 +21,9 @@ gm_engine = GMEngine()
 
 # ===== ディレクトリ =====
 
-CHARACTERS_DIR = "characters"
-SCENARIOS_DIR = "scenarios"
-CHAR_BUILD_DIR = "character_builds"
+CHARACTERS_DIR = Path("characters")
+SCENARIOS_DIR = Path("scenarios")
+CHAR_BUILD_DIR = Path("character_builds")
 
 CHARACTERS_DIR.mkdir(parents=True, exist_ok=True)
 SCENARIOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -84,6 +84,7 @@ def create_empty_character(owner: str):
             "derived": {},
             "skills": {},
             "inventory": [],
+            "weapons": [],
             "background": {
                 "appearance": "",
                 "ideology": "",
