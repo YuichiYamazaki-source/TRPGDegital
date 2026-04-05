@@ -66,8 +66,12 @@ All commands are executed in the `#trpg-main` channel on the **Palworld** Discor
 | Command | Description |
 |---------|-------------|
 | `>> <message>` | Send a message to the KP as your character |
+| `!check [roll]` | Resolve the current pending skill or SAN check |
 | `!roll` | Roll 1d100 (default for CoC skill checks) |
 | `!roll <dice>` | Roll custom dice (e.g., `2d6`, `1d10+5`) |
+| `!status` | Show your current HP / MP / SAN |
+| `!party` | Show the party-wide HP / MP / SAN summary |
+| `!scene` | Show the current scene, clues, and NPC status |
 
 ---
 
@@ -127,7 +131,8 @@ TRPGgame/
 !join suzuki
 !begin
 >> Look around the entrance hall
-!roll              → 🎲 1d100 → 43
->> I rolled 43
+!check             → pending check resolves and KP continues
+!status
+!scene
 !end
 ```
