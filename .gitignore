@@ -1,0 +1,20 @@
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Python
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.venv/
+
+# Env
+.env
+.env.local
+
+# Docker volumes
+postgres_data/
+
+# Editor
+.DS_Store
+.claude/

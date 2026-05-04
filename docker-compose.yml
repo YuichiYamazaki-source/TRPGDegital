@@ -1,0 +1,65 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost/api
+    depends_on:
+      - backend
+    networks:
+      - app-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql://trpg:trpg@db:5432/trpgdb
+      - SECRET_KEY=dev-secret-key-change-in-production
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-net
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=trpg
+      - POSTGRES_PASSWORD=trpg
+      - POSTGRES_DB=trpgdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trpg -d trpgdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-net
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-net
+
+volumes:
+  postgres_data:
+
+networks:
+  app-net:
+    driver: bridge
